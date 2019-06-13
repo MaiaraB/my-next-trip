@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+// import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-flight-search-form',
@@ -6,10 +7,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./flight-search-form.component.css']
 })
 export class FlightSearchFormComponent implements OnInit {
+  // model: NgbDateStruct;
 
   constructor() { }
 
   ngOnInit() {
+  }
+
+  arrayDurationDays(n: number): any[] {
+    return [...Array(n).keys()];
   }
 
 }

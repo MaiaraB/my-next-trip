@@ -1,7 +1,57 @@
-<div class="container">
-  <div class="row">
-    <div class="col-xs-12 col-sm-10 col-md-8">
-      <form action=""></form>
+<form>
+  <div class="row justify-content-center">
+    <div class="col-md-2">
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="roundTripOrOneWay" id="roundTrip" value="roundTrip">
+        <label class="form-check-label" for="roundTrip">Round trip</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="roundTripOrOneWay" id="oneWay" value="oneWay">
+        <label class="form-check-label" for="oneWay">One way</label>
+      </div>
     </div>
   </div>
-</div>
+  <div class="row d-flex justify-content-center align-items-center">
+    <div class="col-md-2 nopadding">
+      <input type="text" id="origin" class="form-control" placeholder="Origin">
+    </div>
+    <div class="col-md-2 nopadding">
+      <input type="text" id="destination" class="form-control" placeholder="Destination">
+    </div>
+    <!-- <div class="col-md-1 nopadding">
+      <input type="text" id="outboundDate" name="outboundDate" class="form-control" 
+              placeholder="yyyy-mm-dd" [(ngModel)]="model" ngbDatepicker #d1="ngbDatepicker">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary calendar" (click)="d1.toggle()" type="button"></button>
+      </div>
+    </div>
+    <div class="col-md-1 nopadding">
+      <input type="text" id="inboundDate" name="inboundDate" class="form-control" 
+              placeholder="yyyy-mm-dd" [(ngModel)]="model" ngbDatepicker #d2="ngbDatepicker">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary calendar" (click)="d2.toggle()" type="button"></button>
+      </div>
+    </div> -->
+    <div class="col-md-1 nopadding">
+      <select class="form-control" id="startingDay">
+        <option value="monday">Monday</option>
+        <option value="tuesday">Tuesday</option>
+        <option value="wednesday">Wednesday</option>
+        <option value="thursday">Thursday</option>
+        <option selected value="friday">Friday</option>
+        <option value="saturday">Saturday</option>
+        <option value="sunday">Sunday</option>
+      </select>
+    </div>
+    <div class="col-md-1 nopadding">
+      <select class="form-control" id="duration">
+        <option selected>Days</option>
+        <option *ngFor="let n of arrayDurationDays(30)" value="{{n+1}}">{{n+1}}</option>
+      </select>
+    </div>
+    <div class="col-md-1 nopadding">
+      <button type="submit" class="btn btn-primary mb-2">Search</button>
+    </div>
+  </div>
+</form>
+
