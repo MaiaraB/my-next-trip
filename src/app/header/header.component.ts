@@ -10,15 +10,16 @@ import { Currency } from './../shared/currency.model';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  collapsed = true;
-  loadedCountries: Country[];
-  loadedCurrencies: Currency[];
+  // collapsed = true;
+  loadedCountries: Country[] = [];
+  loadedCurrencies: Currency[] = [];
 
   constructor(private skyscannerService: SkyscannerService) {}
 
   ngOnInit() {
     this.skyscannerService.fetchCountries().subscribe(countries => {
       this.loadedCountries = countries;
+      console.log(this.loadedCountries);
     });
 
     this.skyscannerService.fetchCurrencies().subscribe(currencies => {

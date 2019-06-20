@@ -1,32 +1,33 @@
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" (click)="collapsed = !collapsed">
-        <span class="icon-bar" *ngFor="let iconBar of [1, 2, 3]"></span>
-      </button>
-      <a routerLink="/" class="navbar-brand">Flight Planner</a>
-    </div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light ">
 
-    <div class="navbar-collapse" [class.collapse]="collapsed" (window:resize)="collapsed = true">
-      <!-- <ul class="nav navbar-nav">
-        <li><a href="#">Example</a></li>
-        <li><a href="#">Example 2</a></li>
-      </ul> -->
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown" appDropdown>
-          <a style="cursor: pointer;" class="dropdown-toggle" role="button">Country <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li *ngFor="let country of loadedCountries"><a href="#">{{ country.Name }}</a></li>
-          </ul>
+    <a class="navbar-brand" routerLink="/">Flight Planner</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" 
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" 
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Country
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#" *ngFor="let country of loadedCountries">{{ country.Name }}</a>
+          </div>
         </li>
-        <li class="dropdown" appDropdown>
-          <a style="cursor: pointer;" class="dropdown-toggle" role="button">Currency <span class="caret"></span></a>
-          <ul class="dropdown-menu">
-            <li *ngFor="let currency of loadedCurrencies"><a href="#">{{ currency.Code }}</a></li>
-          </ul>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Currency
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="#" *ngFor="let currency of loadedCurrencies">{{ currency.Code }}</a>
+          </div>
         </li>
       </ul>
-
     </div>
-  </div>
-</nav>
+  
+  </nav>

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { BehaviorSubject } from 'rxjs';
 
 import { Country } from './country.model';
 import { Currency } from './currency.model';
@@ -12,6 +13,10 @@ export class SkyscannerService {
   private host_value = 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com';
   private authentication_key = 'X-RapidAPI-Key';
   private authentication_value = '4d135256f6msha2ac48e92c97ee4p123afejsnd4237d1df729';
+
+  private countrySource = new BehaviorSubject('UK');
+  currentCountry = this.countrySource.asObservable();
+
 
   constructor(private http: HttpClient) {}
 
@@ -39,6 +44,10 @@ export class SkyscannerService {
       .pipe(map((responseData: any) => {
         return responseData.Currencies
       }));
+  }
+
+  changeCountry(countryCode: string) {
+    this.countrySource.next(countryCode);
   }
 
 }
