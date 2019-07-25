@@ -1,3 +1,151 @@
-<p>
-  search-result-item works!
-</p>
+<div class="cluster d-flex flex-column flex-md-row">
+
+  <div class="cluster-content d-flex flex-column">
+
+    <div class="sub-cluster d-flex flex-column">
+
+      <div class="route-choice-header">
+        <span class="route-type-header d-flex flex-column">
+          <span class="d-flex flex-row">
+            <span class="d-flex"><fa-icon icon="plane" size="xs"></fa-icon></span>
+            <span class="d-flex route-info-item-type">Outbound</span>
+          </span>
+          <span class="d-flex route-type-date">{{ flight.OutboundLeg.Departure | date: 'EEE LLL dd yyyy' }}</span>
+        </span>
+        <span class="route-info">
+          <span class="d-flex flex-column -with-padding-left">
+            <span class="route-info-item-airport">{{ flight.OutboundLeg.Origin.Code }}</span>
+            <span class="route-info-item-city">{{ flight.OutboundLeg.Origin.Name }}</span>
+          </span>
+          <span class="d-flex flex-column -with-padding-left">
+            <span class="route-info-item-airport">{{ flight.OutboundLeg.Destination.Code }}</span>
+            <span class="route-info-item-city">{{ flight.OutboundLeg.Destination.Name }}</span>
+          </span>
+        </span>
+        <!-- <span class="d-flex flex-column-reverse ml-2 my-2 mr-5">
+          <span class="d-flex route-baggage">Baggage</span>
+        </span> -->
+      </div>
+
+      <ul class="itineraries-group">
+        <li class="itinerary-container">
+          <div class="itinerary-wrapper">
+            <div class="itinerary-wrapper-column">
+              <span class="d-flex flex-column">
+                <span class="d-flex flex-row airline-container">
+                  <span>
+                    <img [src]="flight.OutboundLeg.Carriers[0].ImageURL" alt="{{ flight.OutboundLeg.Carriers[0].Name }}" 
+                         class="img-responsive airlines-logo">
+                  </span>
+                  <span>{{ flight.OutboundLeg.Carriers[0].Name }}</span>
+                </span>
+              </span>
+            </div>
+          
+            <div class="itinerary-wrapper-column -with-padding-left">
+              <span class="d-flex time">{{ flight.OutboundLeg.Departure | date: 'HH:mm' }}</span>
+            </div>
+          
+            <div class="itinerary-wrapper-column -with-padding-left">
+              <span class="d-flex time">{{ flight.OutboundLeg.Arrival | date: 'HH:mm' }}</span>
+            </div>
+          </div>
+          <!-- <div class="itinerary-wrapper">
+            <div class="itinerary-wrapper-column">
+              <span class="d-flex"></span>
+            </div>
+          </div> -->
+        </li>
+      </ul>
+
+    </div>
+      
+    <div class="sub-cluster last">
+
+      <div class="route-choice-header">
+        <span class="route-type-header d-flex flex-column">
+          <span class="d-flex flex-row">
+            <span class="d-flex"><fa-icon icon="plane" size="xs"></fa-icon></span>
+            <span class="d-flex route-info-item-type">Inbound</span>
+          </span>
+          <span class="d-flex route-type-date">{{ flight.InboundLeg.Departure | date: 'EEE LLL dd yyyy' }}</span>
+        </span>
+        <span class="route-info">
+          <span class="d-flex flex-column -with-padding-left">
+            <span class="route-info-item-airport">{{ flight.InboundLeg.Origin.Code }}</span>
+            <span class="route-info-item-city">{{ flight.InboundLeg.Origin.Name }}</span>
+          </span>
+          <span class="d-flex flex-column -with-padding-left">
+            <span class="route-info-item-airport">{{ flight.InboundLeg.Destination.Code }}</span>
+            <span class="route-info-item-city">{{ flight.InboundLeg.Destination.Name }}</span>
+          </span>
+        </span>
+      </div>
+
+      <ul class="itineraries-group">
+        <li class="itinerary-container">
+          <div class="itinerary-wrapper">
+            <div class="itinerary-wrapper-column">
+              <span class="d-flex flex-column">
+                <span class="d-flex flex-row airline-container">
+                  <span>
+                    <img [src]="flight.InboundLeg.Carriers[0].ImageURL" alt="{{ flight.InboundLeg.Carriers[0].Name }}" 
+                         class="img-responsive airlines-logo">
+                  </span>
+                  <span>{{ flight.InboundLeg.Carriers[0].Name }}</span>
+                </span>
+              </span>
+            </div>
+          
+            <div class="itinerary-wrapper-column -with-padding-left">
+              <span class="d-flex time">{{ flight.InboundLeg.Departure | date: 'HH:mm' }}</span>
+            </div>
+          
+            <div class="itinerary-wrapper-column -with-padding-left">
+              <span class="d-flex time">{{ flight.InboundLeg.Arrival | date: 'HH:mm' }}</span>
+            </div>
+          </div>
+        </li>
+      </ul>
+
+    </div>
+
+  </div>
+
+  <div class="cluster-pricebox-container">
+    <span class="fare-container">
+      <span class="fare-wrapper">
+        <span class="fare-legend">Price per adult</span>
+        <span class="main-fare">{{ flight.Currency.Symbol }} {{ flight.AgentsInfo[0].Price }}</span>
+      </span>
+      <span class="fare-details">
+        <span>{{ flight.AgentsInfo[0].Name }}</span>
+      </span>
+      <span class="fare-view-deal">
+        <a [href]="flight.AgentsInfo[0].DeepLinkURL" 
+           class="btn btn-secondary booking-link" 
+           role="button">View Deal</a>
+      </span>
+      <span class="d-flex justify-content-between pt-2 agents-listing">
+        <ng-template [ngIf]="multiplePrices">
+          <a *ngFor="let agent of flight.AgentsInfo | slice:1:2"
+              [href]="agent.DeepLinkURL">{{ agent.Name }}</a>
+        </ng-template>
+        <ng-template [ngIf]="moreThanTwoPrices">
+          <a [ngbPopover]="listAgents" placement="bottom">
+            {{ flight.AgentsInfo.length-2 }} more
+            <fa-icon icon="angle-down" size="xs"></fa-icon>
+          </a>
+        </ng-template>
+        <ng-template #listAgents>
+          <span class="list-group">
+            <a class="agents-listing" 
+               *ngFor="let agent of flight.AgentsInfo | slice:3" 
+               [href]="agent.DeepLinkURL">{{ agent.Name }}</a>
+          </span>
+        </ng-template>
+      </span>
+    </span>
+  </div>
+
+</div>

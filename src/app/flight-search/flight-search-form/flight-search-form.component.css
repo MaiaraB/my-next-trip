@@ -5,7 +5,7 @@
 
 .no-radius {
   border-radius: 0em;
-  border-right-width: 0em;
+  /* border-right-width: 0em; */
   -webkit-appearance: none;
   -moz-appearance: none;
   -webkit-border-radius: 0px;
@@ -14,7 +14,7 @@
 .left-corner {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
-  border-right-width: 0em;
+  /* border-right-width: 0em; */
 }
 
 .right-corner {
@@ -22,9 +22,19 @@
   border-bottom-left-radius: 0;
 }
 
-select {
+select.no-radius {
   background-image: url("https://image.flaticon.com/icons/svg/60/60781.svg");
   background-position: 95% 50%;
   background-repeat: no-repeat;
   background-size: 13px;
+}
+
+.pressed {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.un-pressed {
+  background-color: #fff;
+  color: #6c757d ;
 }

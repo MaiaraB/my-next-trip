@@ -2,3 +2,9 @@
   max-height: 300px; /*Provide height in pixels or in other units as per your layout*/
   overflow-y: auto; /*Provide an auto overflow to diaply scroll*/
  }
+
+ .country-currency-menu {
+   display: block;
+   border: none;
+   color: rgba(0,0,0,.5);
+ }

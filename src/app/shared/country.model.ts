@@ -1,9 +1,9 @@
 export class Country {
-  public code: string;
-  public name: string;
+  public Code: string;
+  public Name: string;
 
   constructor(code: string, name: string) {
-    this.code = code;
-    this.name = name;
+    this.Code = code;
+    this.Name = name;
   }
 }

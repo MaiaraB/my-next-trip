@@ -1,3 +1,8 @@
-<p>
-  search-result works!
-</p>
+<div class="d-flex flex-column flex-md-row justify-content-center">
+  <div class="d-flex">
+    <app-flight-search-form [vertical]="true"></app-flight-search-form>
+  </div>
+  <div class="d-flex result-list">
+    <app-search-result-list></app-search-result-list>
+  </div>
+</div>

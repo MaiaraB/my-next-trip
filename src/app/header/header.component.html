@@ -9,23 +9,39 @@
   
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+        <li class="nav-item">
+          <!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Country
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="#" *ngFor="let country of loadedCountries">{{ country.Name }}</a>
-          </div>
+          </div> -->
+          <select class="country-currency-menu" style="max-width: 150px"
+                [ngModel]="selectedCountry" (change)="selectCountry($event.target.value)"
+                name="country">
+          <option [value]="country.Code" 
+                  *ngFor="let country of loadedCountries">
+                  {{ country.Name }}
+          </option>
+        </select>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
+          <!-- <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" 
              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Currency
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="#" *ngFor="let currency of loadedCurrencies">{{ currency.Code }}</a>
-          </div>
+          </div> -->
+          <select class="country-currency-menu" style="width: 80px"
+                [ngModel]="selectedCurrency" (change)="selectCurrency($event.target.value)"
+                name="country">
+            <option [value]="currency.Code" 
+                    *ngFor="let currency of loadedCurrencies">
+                    {{ currency.Symbol }} {{currency.Code }}
+            </option>
+          </select>
         </li>
       </ul>
     </div>

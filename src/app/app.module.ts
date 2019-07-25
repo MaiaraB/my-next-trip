@@ -2,7 +2,13 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-// import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+// import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faPlane } from '@fortawesome/free-solid-svg-icons'
+import { faAngleDown } from '@fortawesome/free-solid-svg-icons';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -29,10 +35,16 @@ import { DropdownDirective } from './shared/dropdown.directive';
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    // NgbModule,
-    HttpClientModule
+    HttpClientModule,
+    NgbModule,
+    // NgbPopover,
+    FontAwesomeModule
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+  constructor() {
+    library.add(faPlane, faAngleDown)
+  }
+}

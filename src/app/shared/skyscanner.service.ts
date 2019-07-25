@@ -1,24 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
-import { BehaviorSubject } from 'rxjs';
 
 import { Country } from './country.model';
 import { Currency } from './currency.model';
+import { TravelPlannerService } from './travel-planner.service';
+import { SkyscannerPlace } from './skyscanner-place.model';
 
 @Injectable({providedIn: 'root'})
 export class SkyscannerService {
   private url = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0';
+  private urlSearchPlace = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0';
   private host_key = 'X-RapidAPI-Host';
   private host_value = 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com';
   private authentication_key = 'X-RapidAPI-Key';
   private authentication_value = '4d135256f6msha2ac48e92c97ee4p123afejsnd4237d1df729';
 
-  private countrySource = new BehaviorSubject('UK');
-  currentCountry = this.countrySource.asObservable();
-
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private travelPlannerService: TravelPlannerService) {}
 
   fetchCountries() {
     return this.http
@@ -29,7 +27,7 @@ export class SkyscannerService {
         })
       })
       .pipe(map((responseData: any) => {
-        return responseData.Countries
+        return responseData.Countries;
       }));
   }
 
@@ -42,12 +40,25 @@ export class SkyscannerService {
         })
       })
       .pipe(map((responseData: any) => {
-        return responseData.Currencies
+        return responseData.Currencies;
       }));
   }
 
-  changeCountry(countryCode: string) {
-    this.countrySource.next(countryCode);
+  fetchPlaces(query: string) {
+    return this.http
+      .get<SkyscannerPlace[]>(
+        this.urlSearchPlace + '/' + 
+        this.travelPlannerService.getCurrentCountry() + '/' + 
+        this.travelPlannerService.getCurrentCurrency() + '/' + 
+        navigator.language + '/?query=' + query, {
+        headers: new HttpHeaders({
+          [this.host_key]: this.host_value, 
+          [this.authentication_key]: this.authentication_value
+        })
+      })
+      .pipe(map((responseData: any) => {
+        return responseData.Places;
+      }));
   }
-
+  
 }
