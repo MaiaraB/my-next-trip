@@ -19,6 +19,7 @@ import { SearchResultItemComponent } from './search-result/search-result-list/se
 import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { FlightSearchFormComponent } from './flight-search/flight-search-form/flight-search-form.component';
 import { DropdownDirective } from './shared/dropdown.directive';
+import { DurationPipe } from './shared/duration.pipe';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import { DropdownDirective } from './shared/dropdown.directive';
     SearchResultItemComponent,
     FlightSearchComponent,
     FlightSearchFormComponent,
-    DropdownDirective
+    DropdownDirective,
+    DurationPipe
   ],
   imports: [
     BrowserModule,

@@ -1,3 +1,4 @@
 .result-item {
-  flex: 1;
+  /* width: 100%; */
+  flex-grow: 1;
 }

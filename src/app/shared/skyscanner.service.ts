@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+import { environment } from './../../environments/environment';
 
 import { Country } from './country.model';
 import { Currency } from './currency.model';
@@ -12,9 +13,9 @@ export class SkyscannerService {
   private url = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/reference/v1.0';
   private urlSearchPlace = 'https://skyscanner-skyscanner-flight-search-v1.p.rapidapi.com/apiservices/autosuggest/v1.0';
   private host_key = 'X-RapidAPI-Host';
-  private host_value = 'skyscanner-skyscanner-flight-search-v1.p.rapidapi.com';
+  private host_value = environment.skyscannerAPIHost;
   private authentication_key = 'X-RapidAPI-Key';
-  private authentication_value = '4d135256f6msha2ac48e92c97ee4p123afejsnd4237d1df729';
+  private authentication_value = environment.skyscannerAPIKey;
 
   constructor(private http: HttpClient, private travelPlannerService: TravelPlannerService) {}
 

@@ -5,7 +5,7 @@
     <div class="sub-cluster d-flex flex-column">
 
       <div class="route-choice-header">
-        <span class="route-type-header d-flex flex-column">
+        <span class="route-type-header route-top-header d-flex flex-column">
           <span class="d-flex flex-row">
             <span class="d-flex"><fa-icon icon="plane" size="xs"></fa-icon></span>
             <span class="d-flex route-info-item-type">Outbound</span>
@@ -42,12 +42,17 @@
               </span>
             </div>
           
-            <div class="itinerary-wrapper-column -with-padding-left">
+            <div class="itinerary-wrapper-column -second-column -with-padding-left">
               <span class="d-flex time">{{ flight.OutboundLeg.Departure | date: 'HH:mm' }}</span>
+              <span class="d-flex stops">
+                <span *ngIf="outboundNoStops; else hasStops">direct</span>
+                <ng-template #hasStops>{{ flight.OutboundLeg.Stops.length | i18nPlural: stopsPluralMapping }}</ng-template>
+              </span>
             </div>
           
             <div class="itinerary-wrapper-column -with-padding-left">
               <span class="d-flex time">{{ flight.OutboundLeg.Arrival | date: 'HH:mm' }}</span>
+              <span class="duration">{{ flight.OutboundLeg.Duration | duration }}</span>
             </div>
           </div>
           <!-- <div class="itinerary-wrapper">
@@ -97,12 +102,17 @@
               </span>
             </div>
           
-            <div class="itinerary-wrapper-column -with-padding-left">
+            <div class="itinerary-wrapper-column -second-column -with-padding-left">
               <span class="d-flex time">{{ flight.InboundLeg.Departure | date: 'HH:mm' }}</span>
+              <span class="d-flex stops">
+                  <span *ngIf="inboundNoStops; else hasStops2">direct</span>
+                  <ng-template #hasStops2>{{ flight.InboundLeg.Stops.length | i18nPlural: stopsPluralMapping }}</ng-template>
+                </span>
             </div>
           
             <div class="itinerary-wrapper-column -with-padding-left">
               <span class="d-flex time">{{ flight.InboundLeg.Arrival | date: 'HH:mm' }}</span>
+              <span class="duration">{{ flight.InboundLeg.Duration | duration }}</span>
             </div>
           </div>
         </li>
@@ -112,24 +122,28 @@
 
   </div>
 
-  <div class="cluster-pricebox-container">
+  <div class="cluster-pricebox-container" [class.pricebox-border-left]="!vertical" [class.pricebox-border-top]="vertical">
     <span class="fare-container">
       <span class="fare-wrapper">
         <span class="fare-legend">Price per adult</span>
-        <span class="main-fare">{{ flight.Currency.Symbol }} {{ flight.AgentsInfo[0].Price }}</span>
+        <span class="main-fare">{{ flight.Currency.Symbol }}{{ flight.AgentsInfo[0].Price }}</span>
       </span>
       <span class="fare-details">
-        <span>{{ flight.AgentsInfo[0].Name }}</span>
+        <span><b>{{ flight.AgentsInfo[0].Name }}</b></span>
       </span>
       <span class="fare-view-deal">
         <a [href]="flight.AgentsInfo[0].DeepLinkURL" 
-           class="btn btn-secondary booking-link" 
+           target="_blank"
+           class="btn btn-primary booking-link" 
            role="button">View Deal</a>
       </span>
       <span class="d-flex justify-content-between pt-2 agents-listing">
         <ng-template [ngIf]="multiplePrices">
           <a *ngFor="let agent of flight.AgentsInfo | slice:1:2"
-              [href]="agent.DeepLinkURL">{{ agent.Name }}</a>
+              [href]="agent.DeepLinkURL"
+              target="_blank">
+              {{ flight.Currency.Symbol }}{{ agent.Price }} <b>{{ agent.Name }}</b>
+          </a>
         </ng-template>
         <ng-template [ngIf]="moreThanTwoPrices">
           <a [ngbPopover]="listAgents" placement="bottom">
@@ -141,7 +155,10 @@
           <span class="list-group">
             <a class="agents-listing" 
                *ngFor="let agent of flight.AgentsInfo | slice:3" 
-               [href]="agent.DeepLinkURL">{{ agent.Name }}</a>
+               [href]="agent.DeepLinkURL"
+               target="_blank">
+               {{ flight.Currency.Symbol }}{{ agent.Price }} <b>{{ agent.Name }}</b>
+            </a>
           </span>
         </ng-template>
       </span>

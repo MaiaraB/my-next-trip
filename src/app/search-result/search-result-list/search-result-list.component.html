@@ -1,3 +1,13 @@
-<div class="result-item">
-  <app-search-result-item *ngFor="let flight of flights" [flight]="flight"></app-search-result-item>
+<div class="d-flex flex-column justify-content-center result-item mb-3">
+  <app-search-result-item *ngFor="let flight of currentFlights" [flight]="flight"></app-search-result-item>
+  <div class="d-flex justify-content-center" *ngIf="isFlightsEmpty; else elseBlock">
+    <div class="spinner-border" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
+  <ng-template #elseBlock>
+    <div class="d-flex justify-content-center">
+      <button class="btn btn-primary" (click)="onLoadMore()">Load More</button>
+    </div>
+  </ng-template>
 </div>

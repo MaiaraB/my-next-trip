@@ -38,6 +38,9 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.originSuggestions = [];
     this.destinationSuggestions = [];
+    if(window.innerWidth < 768) {
+      this.vertical = true;
+    }
   }
 
   arrayDurationDays(n: number): any[] {
@@ -70,7 +73,7 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy {
         //   this.travelPlannerService.changeResults(results);
         //   // this.router.navigate(['/flight-result']);
         // });
-
+      this.travelPlannerService.changeResults([]);
       this.router.navigate(['/flight-result']);
     }
   }

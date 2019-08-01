@@ -1,5 +1,5 @@
-<div class="d-flex flex-column justify-content-center align-items-center">
-  <form (ngSubmit)="onSubmit(f)" #f="ngForm">
+<div class="d-flex flex-column justify-content-center align-items-center mb-3">
+  <form (ngSubmit)="onSubmit()" #f="ngForm">
     <!-- <div class="d-flex flex-row mb-1">
       <div class="btn-group btn-group-toggle">
         <label class="btn btn-outline-secondary" [ngClass]="{'pressed': selectedRoundTrip , 'un-pressed': !selectedRoundTrip}">
@@ -21,64 +21,62 @@
         </label>
       </div>
     </div> -->
-    <div class="d-flex flex-column ml-0" [class.flex-sm-column]="!vertical" [class.flex-md-row]="!vertical">
-      <div class="d-flex col-12 px-0" [class.col-md-3]="!vertical" [class.my-2]="vertical">
-        <a [ngbPopover]="popContent" [popoverTitle]="popTitle" placement="bottom">
-          <input type="text" 
-                id="origin" 
-                class="form-control form-control-lg" 
-                [class.left-corner]="!vertical" 
-                placeholder="Origin"
-                ngModel
-                name="origin"
-                required
-                (input)="onOriginChange($event.target.value)">
-        </a>
-        <ng-template #popContent>
-          <div *ngIf="!originTooSmall; else noSuggestions" class="list-group">
-            <button type="button" class="list-group-item list-group-item-action" 
-                    *ngFor="let place of originSuggestions"
-                    (click)="selectedOrigin($event.target.value, $event.target.textContent)"
-                    [value]="place.PlaceId">{{ place.PlaceName }}, {{ place.CountryName }}</button>
-          </div>
-          <ng-template #noSuggestions>
-            <p>Enter at least 3 letters and wait for the results</p>
-          </ng-template>
-        </ng-template>
-        <ng-template #popTitle>
-          Suggestions
-        </ng-template>
-      </div>
-      
-      <ng-template [ngIf]="selectedRoundTrip">
-        <div class="d-flex col-12 px-0" [class.col-md-3]="!vertical" [class.mb-2]="vertical">
-          <a [ngbPopover]="popContent2" [popoverTitle]="popTitle" placement="bottom">
-            <input type="text" 
-            id="destination" 
-            class="form-control form-control-lg" 
-            [class.no-radius]="!vertical" 
-            placeholder="Destination"
+    <div class="d-flex flex-column ml-0" [class.input-group]="!vertical" [class.input-group-lg]="!vertical" [class.flex-sm-column]="!vertical" [class.flex-md-row]="!vertical">
+      <input type="text" 
+            id="origin" 
+            autocomplete="off"
+            class="form-control form-control-lg"
+            placeholder="Origin"
             ngModel
-            name="destination"
+            name="origin"
             required
-            (input)="onDestinationChange($event.target.value)">
-          </a>
-          <ng-template #popContent2>
-            <div *ngIf="!destinationTooSmall; else noSuggestions" class="list-group">
-              <button type="button" class="list-group-item list-group-item-action" 
-              *ngFor="let place of destinationSuggestions"
-              (click)="selectedDestination($event.target.value, $event.target.textContent)"
-              [value]="place.PlaceId">{{ place.PlaceName }}}, {{ place.CountryName }}</button>
-            </div>
-            <ng-template #noSuggestions>
-              <p>Enter at least 3 letters and wait for the results</p>
-            </ng-template>
-          </ng-template>
-          <ng-template #popTitle>
-            Suggestions
-          </ng-template>
+            (input)="onOriginChange($event.target.value)"
+            [ngbPopover]="popContent" [popoverTitle]="popTitle" placement="bottom"
+            [class.mb-2]="vertical">
+        
+      <ng-template #popContent>
+        <div *ngIf="!originTooSmall; else noSuggestions" class="list-group">
+          <button type="button" class="list-group-item list-group-item-action" 
+                  *ngFor="let place of originSuggestions"
+                  (click)="selectedOrigin($event.target.value, $event.target.textContent)"
+                  [value]="place.PlaceId">{{ place.PlaceName }}, {{ place.CountryName }}</button>
         </div>
+        <ng-template #noSuggestions>
+          <p>Enter at least 3 letters and wait for the results</p>
+        </ng-template>
       </ng-template>
+      <ng-template #popTitle>
+        Suggestions
+      </ng-template>
+      
+      <!-- <ng-template [ngIf]="selectedRoundTrip"> -->
+      <input type="text" 
+             id="destination" 
+             autocomplete="off"
+             class="form-control form-control-lg"
+             placeholder="Destination"
+             ngModel
+             name="destination"
+             required
+             (input)="onDestinationChange($event.target.value)"
+             [ngbPopover]="popContent2" [popoverTitle]="popTitle" placement="bottom"
+             [class.mb-2]="vertical">
+      <ng-template #popContent2>
+        <div *ngIf="!destinationTooSmall; else noSuggestions" class="list-group">
+          <button type="button" class="list-group-item list-group-item-action" 
+          *ngFor="let place of destinationSuggestions"
+          (click)="selectedDestination($event.target.value, $event.target.textContent)"
+          [value]="place.PlaceId">{{ place.PlaceName }}, {{ place.CountryName }}</button>
+        </div>
+        <ng-template #noSuggestions>
+          <p>Enter at least 3 letters and wait for the results</p>
+        </ng-template>
+      </ng-template>
+      <ng-template #popTitle>
+        Suggestions
+      </ng-template>
+
+      <!-- </ng-template> -->
         <!-- <div class="col-md-1 nopadding">
         <input type="text" id="outboundDate" name="outboundDate" class="form-control" 
                 placeholder="yyyy-mm-dd" [(ngModel)]="model" ngbDatepicker #d1="ngbDatepicker">
@@ -93,39 +91,44 @@
           <button class="btn btn-outline-secondary calendar" (click)="d2.toggle()" type="button"></button>
         </div>
       </div> -->
-      <div class="d-flex col-12 px-0" [class.col-md-3]="!vertical" [class.mb-2]="vertical">
-        <select class="form-control form-control-lg" 
-                id="startingDay" 
-                [class.no-radius]="!vertical"
-                [ngModel]="defaultStartingDay"
-                name="startingDay"
+      
+      
+      <select [class.form-control]="vertical"
+              [class.form-control-lg]="vertical"
+              [class.mb-2]="vertical"
+              [class.custom-select]="!vertical"
+              id="startingDay"
+              [ngModel]="defaultStartingDay"
+              name="startingDay"
+              required>
+        <option value="1">Monday</option>
+        <option value="2">Tuesday</option>
+        <option value="3">Wednesday</option>
+        <option value="4">Thursday</option>
+        <option value="5">Friday</option>
+        <option value="6">Saturday</option>
+        <option value="7">Sunday</option>
+      </select>
+
+      <!-- <ng-template [ngIf]="selectedRoundTrip"> -->
+        <select [class.form-control]="vertical"
+                [class.form-control-lg]="vertical"
+                [class.mb-2]="vertical"
+                [class.custom-select]="!vertical"
+                id="duration"
+                [ngModel]="defaultDuration"
+                name="duration"
                 required>
-          <option value="1">Monday</option>
-          <option value="2">Tuesday</option>
-          <option value="3">Wednesday</option>
-          <option value="4">Thursday</option>
-          <option value="5">Friday</option>
-          <option value="6">Saturday</option>
-          <option value="7">Sunday</option>
-        </select>
-      </div>
-      <ng-template [ngIf]="selectedRoundTrip">
-        <div class="d-flex col-12 px-0" [class.col-md-2]="!vertical" [class.mb-2]="vertical">
-          <select class="form-control form-control-lg" 
-          [class.no-radius]="!vertical" 
-          id="duration"
-          [ngModel]="defaultDuration"
-          name="duration"
-          required>
           <!-- <option selected>Days</option> -->
           <option *ngFor="let n of arrayDurationDays(30)" value="{{n+1}}">{{n+1}}</option>
         </select>
-      </div>
-    </ng-template>
-      <div class="d-flex col-12 px-0" [class.col-md-1]="!vertical">
+      <!-- </ng-template> -->
+
+      <div [class.input-group-append]="!vertical">
         <button type="submit" 
-                class="btn btn-secondary btn-lg" 
-                [class.right-corner]="!vertical"
+                class="btn btn-primary" 
+                [class.btn-lg]="vertical"
+                [class.btn-block]="vertical"
                 [disabled]="!f.valid">Search</button>
       </div>
     </div>
