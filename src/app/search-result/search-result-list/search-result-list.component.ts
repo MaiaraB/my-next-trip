@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
-import { FlightResult } from './../../shared/flight-result.model';
+import { FlightResult } from '../../models/flight-result.model';
 
 @Component({
   selector: 'app-search-result-list',

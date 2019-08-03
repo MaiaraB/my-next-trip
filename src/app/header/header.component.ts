@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { SkyscannerService } from './../shared/skyscanner.service';
 import { TravelPlannerService } from './../shared/travel-planner.service';
-import { Country } from '../shared/country.model';
-import { Currency } from './../shared/currency.model';
+import { Country } from '../models/country.model';
+import { Currency } from '../models/currency.model';
 
 @Component({
   selector: 'app-header',

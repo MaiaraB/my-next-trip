@@ -20,6 +20,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { FlightSearchFormComponent } from './flight-search/flight-search-form/flight-search-form.component';
 import { DropdownDirective } from './shared/dropdown.directive';
 import { DurationPipe } from './shared/duration.pipe';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +32,8 @@ import { DurationPipe } from './shared/duration.pipe';
     FlightSearchComponent,
     FlightSearchFormComponent,
     DropdownDirective,
-    DurationPipe
+    DurationPipe,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,

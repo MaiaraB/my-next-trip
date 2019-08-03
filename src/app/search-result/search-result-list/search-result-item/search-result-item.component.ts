@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { I18nPluralPipe } from '@angular/common';
 
-import { FlightResult } from './../../../shared/flight-result.model';
+import { FlightResult } from '../../../models/flight-result.model';
 
 @Component({
   selector: 'app-search-result-item',

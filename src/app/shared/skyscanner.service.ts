@@ -3,10 +3,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 
-import { Country } from './country.model';
-import { Currency } from './currency.model';
+import { Country } from '../models/country.model';
+import { Currency } from '../models/currency.model';
 import { TravelPlannerService } from './travel-planner.service';
-import { SkyscannerPlace } from './skyscanner-place.model';
+import { SkyscannerPlace } from '../models/skyscanner-place.model';
 
 @Injectable({providedIn: 'root'})
 export class SkyscannerService {

@@ -1,12 +1,12 @@
-import { SearchParams } from './../../shared/search-params.model';
-import { SkyscannerPlace } from './../../shared/skyscanner-place.model';
-import { Component, OnInit, Input, ViewChild, OnDestroy } from '@angular/core';
+import { SearchParams } from '../../models/search-params.model';
+import { SkyscannerPlace } from '../../models/skyscanner-place.model';
+import { Component, OnInit, Input, ViewChild, OnDestroy, AfterViewChecked } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 // import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
-import { FlightResult } from 'src/app/shared/flight-result.model';
+import { FlightResult } from 'src/app/models/flight-result.model';
 import { SkyscannerService } from 'src/app/shared/skyscanner.service';
 
 @Component({
@@ -14,7 +14,7 @@ import { SkyscannerService } from 'src/app/shared/skyscanner.service';
   templateUrl: './flight-search-form.component.html',
   styleUrls: ['./flight-search-form.component.css']
 })
-export class FlightSearchFormComponent implements OnInit, OnDestroy {
+export class FlightSearchFormComponent implements OnInit, OnDestroy, AfterViewChecked {
   // model: NgbDateStruct;
   @ViewChild('f', { static: false }) searchForm: NgForm;
   @Input() vertical: boolean;
@@ -42,13 +42,26 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy {
       this.vertical = true;
     }
   }
+  
+  ngAfterViewChecked() {
+    const searchParams = this.travelPlannerService.getSearchParams()
+    if (searchParams != null) {
+      this.searchForm.setValue({
+        origin: searchParams.origin,
+        destination: searchParams.destination,
+        startingDay: searchParams.startingDay,
+        duration: searchParams.duration
+      })
+      this.originId = searchParams.originID;
+      this.destinationId = searchParams.destinationID;
+    }
+  }
 
   arrayDurationDays(n: number): any[] {
     return [...Array(n).keys()];
   }
 
   onSubmit() {
-    // console.log(form);
     if (this.originId == null) {
       this.searchForm.controls['origin'].setErrors({'incorrect': true});
     }
@@ -58,8 +71,10 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy {
       this.travelPlannerService.setSearchParams(
         new SearchParams(
           this.selectedRoundTrip,
-          this.originId, 
-          this.destinationId, 
+          this.searchForm.controls['origin'].value,
+          this.originId,
+          this.searchForm.controls['destination'].value,
+          this.destinationId,
           this.searchForm.value.startingDay, 
           this.searchForm.value.duration
         )
