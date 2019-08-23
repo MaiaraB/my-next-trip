@@ -142,9 +142,9 @@
       <ng-template #popDatePicker>
         <ngb-datepicker ngbDatepicker
                         [displayMonths]="displayMonths" 
-                        [navigation]="'arrows'" 
+                        navigation="arrows" 
                         [dayTemplate]="t"
-                        outsideDays="visible"
+                        outsideDays="hidden"
                         (select)="onDateSelection($event)">
         </ngb-datepicker>
       </ng-template>

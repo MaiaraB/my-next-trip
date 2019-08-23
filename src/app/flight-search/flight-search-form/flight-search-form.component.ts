@@ -63,6 +63,8 @@ export class FlightSearchFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.fromDate = this.calendar.getToday();
+    this.toDate = this.calendar.getNext(this.fromDate, 'd',30);
     this.totalTravellers = 1;
     this.selectedClass = 'economy';
     this.originSuggestions = [];
@@ -90,8 +92,8 @@ export class FlightSearchFormComponent implements OnInit {
       'destination': new FormControl((searchParams!=null)?searchParams.destination:null, Validators.required),
       'startingDay': new FormControl((searchParams!=null)?searchParams.startingDay:this.defaultStartingDay),
       'duration': new FormControl((searchParams!=null)?searchParams.duration:this.defaultDuration),
-      'fromDate': new FormControl((searchParams!=null)?searchParams.fromDate:null, Validators.required),
-      'toDate': new FormControl((searchParams!=null)?searchParams.toDate:null, Validators.required),
+      'fromDate': new FormControl((searchParams!=null)?searchParams.fromDate:this.ngbDateAdapter.format(this.fromDate), Validators.required),
+      'toDate': new FormControl((searchParams!=null)?searchParams.toDate:this.ngbDateAdapter.format(this.toDate), Validators.required),
       'adults': new FormControl((searchParams!=null)?searchParams.adults:this.travellerTypes.get('adults').defaultValue),
       'children': new FormControl((searchParams!=null)?searchParams.children:this.travellerTypes.get('children').defaultValue),
       'infants': new FormControl((searchParams!=null)?searchParams.infants:this.travellerTypes.get('infants').defaultValue),
