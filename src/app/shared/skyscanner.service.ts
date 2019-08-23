@@ -23,6 +23,7 @@ export class SkyscannerService {
     return this.http
       .get<Country[]>(this.url + '/countries/en-US', {
         headers: new HttpHeaders({
+          'Access-Control-Allow-Origin': '*',
           [this.host_key]: this.host_value, 
           [this.authentication_key]: this.authentication_value
         })
@@ -36,6 +37,7 @@ export class SkyscannerService {
     return this.http
       .get<Currency[]>(this.url + '/currencies', {
         headers: new HttpHeaders({
+          'Access-Control-Allow-Origin': '*',
           [this.host_key]: this.host_value, 
           [this.authentication_key]: this.authentication_value
         })

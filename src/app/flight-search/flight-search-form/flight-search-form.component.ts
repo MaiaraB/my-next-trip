@@ -58,13 +58,11 @@ export class FlightSearchFormComponent implements OnInit {
               private ngbDateAdapter: NgbDateParserFormatter,
               private ngbPopoverConfig: NgbPopoverConfig) {
     this.ngbPopoverConfig.popoverClass = 'popover-bigger-width';
-    // this.fromDate = calendar.getToday();
-    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+    this.fromDate = calendar.getToday();
+    this.toDate = calendar.getNext(calendar.getToday(), 'd', 30);
   }
 
   ngOnInit() {
-    this.fromDate = this.calendar.getToday();
-    this.toDate = this.calendar.getNext(this.fromDate, 'd',30);
     this.totalTravellers = 1;
     this.selectedClass = 'economy';
     this.originSuggestions = [];
