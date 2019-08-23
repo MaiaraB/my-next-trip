@@ -1,6 +1,12 @@
-<div class="d-flex flex-column justify-content-center result-item mb-3">
+<div class="result-list d-flex flex-column justify-content-center mb-3">
+  <div class="d-flex justify-content-end" *ngIf="!isLoading">
+    <label class="sorting-label">Sorted by</label>
+    <select class="sorting-selector" name="sortBy" id="sortBy" (change)="onChangeSortedBy($event.target.value)">
+      <option *ngFor="let sortingOption of sortingOptions" [value]="sortingOption">{{ sortingOption }}</option>
+    </select>
+  </div>
   <app-search-result-item *ngFor="let flight of currentFlights" [flight]="flight"></app-search-result-item>
-  <div class="d-flex justify-content-center" *ngIf="isFlightsEmpty; else elseBlock">
+  <div class="d-flex justify-content-center" *ngIf="isLoading; else elseBlock">
     <div class="spinner-border" role="status">
       <span class="sr-only">Loading...</span>
     </div>

@@ -8,6 +8,40 @@
   color: #6c757d ;
 }
 
+.number-input-button {
+  color: black;
+  font-size: 0.65em!important;
+}
+
+.top-select {
+  border: none;
+  background-color: #eee;
+  min-width: 120px;
+}
+
+.travellers-input {
+
+}
+
+.travellers-input-label {
+  display: inline-block;
+}
+
+.travellers-input-age {
+  font-size: 13px;
+  padding-left: 5px;
+  padding-right: 20px;
+  color: #92aabb;
+}
+
+.travellers-input-number {
+  width: 30px;
+  font-size: 100%;
+  margin: 0;
+  border: none;
+  text-align: center;
+}
+
 /* .form-control {
   border-color: #DD5C29;
 }
@@ -15,3 +49,24 @@
 .custom-select {
   border-color: #DD5C29;
 } */
+
+.custom-day {
+  text-align: center;
+  padding: 0.185rem 0.25rem;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+}
+
+.custom-day.focused {
+  background-color: #e6e6e6;
+}
+
+.custom-day.range, .custom-day:hover {
+  background-color: rgb(2, 117, 216);
+  color: white;
+}
+
+.custom-day.faded {
+  background-color: rgba(2, 117, 216, 0.5);
+}

@@ -1,7 +1,7 @@
 .cluster {
   border: 1px solid #ccc;
   border-radius: 8px;
-  margin: 0 20px 20px;
+  margin: 0 0 20px;
   background-color: #fff;
   /* width: 980px; */
 }
@@ -11,12 +11,8 @@
   /* width: 100%; */
 }
 
-.sub-cluster {
-  border-bottom: 1px solid #ccc;
-}
-
-.sub-cluster.last {
-  border-bottom: none;
+.last {
+  border-top: 1px solid #ccc;
 }
 
 .route-choice-header {

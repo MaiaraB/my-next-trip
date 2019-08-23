@@ -1,4 +1,18 @@
-.result-item {
+.result-list {
   /* width: 100%; */
   flex-grow: 1;
+  margin-left: 20px;
+}
+
+.sorting-label {
+  color: rgba(0,0,0,.5);
+  font-size: 14px;
+}
+
+.sorting-selector {
+  display: block;
+  border: none;
+  background-color: #eee;
+  margin-bottom: .5rem;
+  font-size: 14px;
 }

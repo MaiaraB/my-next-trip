@@ -21,22 +21,28 @@ export class SearchResultItemComponent implements OnInit {
       '=1' :  '1 stop',
       'other' : '# stops'
     };
+  isRoundTrip: boolean = true;
   
   constructor() { }
 
   ngOnInit() {
-    this.vertical = false;
+    if (this.flight.InboundLeg.Carriers == null) {
+      this.isRoundTrip = false;
+    }
     this.multiplePrices = (this.flight.AgentsInfo.length > 1);
     this.moreThanTwoPrices = (this.flight.AgentsInfo.length > 2);
+
+    this.vertical = false;
     if(window.innerWidth < 768) {
       this.vertical = true;
     }
+
     this.outboundNoStops = false;
     if (this.flight.OutboundLeg.Stops.length == 0) {
       this.outboundNoStops = true;
     }
     this.inboundNoStops = false;
-    if (this.flight.InboundLeg.Stops.length == 0) {
+    if (this.flight.InboundLeg.Stops && this.flight.InboundLeg.Stops.length == 0) {
       this.inboundNoStops = true;
     }
   }

@@ -1,3 +1,4 @@
+import { CabinClass } from './cabin-class.enum';
 export class SearchParams {
   public roundTrip: boolean;
   public origin: string;
@@ -6,9 +7,17 @@ export class SearchParams {
   public destinationID: string;
   public startingDay: string;
   public duration: string;
+  public adults: number;
+  public children: number;
+  public infants: number;
+  public cabinClass: string;
+  public fromDate: string;
+  public toDate: string;
 
   constructor(roundTrip: boolean, origin: string, originID: string, destination: string, 
-              destinationID: string, startingDay: string, duration: string) {
+              destinationID: string, startingDay: string, duration: string,
+              adults: number, children: number, infants: number, cabinClass: string,
+              fromDate: string, toDate: string) {
     this.roundTrip = roundTrip;
     this.origin = origin;
     this.originID = originID;
@@ -16,5 +25,11 @@ export class SearchParams {
     this.destinationID = destinationID;
     this.startingDay = startingDay;
     this.duration = duration;
+    this.adults = adults;
+    this.children = children;
+    this.infants = infants
+    this.cabinClass = cabinClass;
+    this.fromDate = fromDate;
+    this.toDate = toDate;
   }
 }

@@ -1,25 +1,32 @@
 import { SearchParams } from '../../models/search-params.model';
 import { SkyscannerPlace } from '../../models/skyscanner-place.model';
-import { Component, OnInit, Input, ViewChild, OnDestroy, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { NgForm } from '@angular/forms';
-// import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { NgbDateStruct, NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
-import { FlightResult } from 'src/app/models/flight-result.model';
 import { SkyscannerService } from 'src/app/shared/skyscanner.service';
+import { CabinClass } from './../../models/cabin-class.enum';
+import { config } from 'rxjs';
 
 @Component({
   selector: 'app-flight-search-form',
   templateUrl: './flight-search-form.component.html',
   styleUrls: ['./flight-search-form.component.css']
 })
-export class FlightSearchFormComponent implements OnInit, OnDestroy, AfterViewChecked {
-  // model: NgbDateStruct;
-  @ViewChild('f', { static: false }) searchForm: NgForm;
+export class FlightSearchFormComponent implements OnInit {
+  fromDate: NgbDate;
+  toDate: NgbDate;
+  hoveredDate: NgbDate;
+  displayMonths = 2;
+
+  searchForm: FormGroup;
   @Input() vertical: boolean;
+
   defaultStartingDay = '5';
   defaultDuration = '2';
+
   selectedRoundTrip: boolean = true;
   selectedOneWay: boolean = false;
 
@@ -31,34 +38,64 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy, AfterViewCh
   originId: string;
   destinationId: string;
 
+  totalTravellers: number;
+  travellerTypes = new Map<string, {label: string, defaultValue: number, ageRange: string, minValue: number, maxValue: number}>();
+
+  travellerPluralMapping: 
+    {[k: string]: string} = {
+      '=1' :  '1 adult',
+      'other' : '# travellers'
+    };
+
+  selectedClass: string;
+  keys = Object.keys;
+  cabinClasses = CabinClass;
+
   constructor(private travelPlannerService: TravelPlannerService, 
               private skyscannerService: SkyscannerService,
-              private router: Router) { }
+              private router: Router,
+              private calendar: NgbCalendar,
+              private ngbDateAdapter: NgbDateParserFormatter,
+              private ngbPopoverConfig: NgbPopoverConfig) {
+    this.ngbPopoverConfig.popoverClass = 'popover-bigger-width';
+    // this.fromDate = calendar.getToday();
+    // this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+  }
 
   ngOnInit() {
+    this.totalTravellers = 1;
+    this.selectedClass = 'economy';
     this.originSuggestions = [];
     this.destinationSuggestions = [];
     if(window.innerWidth < 768) {
       this.vertical = true;
+      this.displayMonths = 1;
     }
-  }
-  
-  ngAfterViewChecked() {
-    const searchParams = this.travelPlannerService.getSearchParams()
+
+    this.travellerTypes.set('adults', {label: 'Adults', defaultValue: 1, ageRange: '', minValue: 1, maxValue: 8});
+    this.travellerTypes.set('children', {label: 'Children', defaultValue: 0, ageRange: '1-16', minValue: 0, maxValue: 8});
+    this.travellerTypes.set('infants', {label: 'Infants', defaultValue: 0, ageRange: 'under 1', minValue: 0, maxValue: 8});
+
+    const searchParams = this.travelPlannerService.getSearchParams();
     if (searchParams != null) {
-      this.searchForm.setValue({
-        origin: searchParams.origin,
-        destination: searchParams.destination,
-        startingDay: searchParams.startingDay,
-        duration: searchParams.duration
-      })
       this.originId = searchParams.originID;
       this.destinationId = searchParams.destinationID;
+      this.selectedRoundTrip = searchParams.roundTrip;
+      this.selectedOneWay = !searchParams.roundTrip;
+      this.selectedClass = searchParams.cabinClass;
+      this.totalTravellers = searchParams.adults + searchParams.children + searchParams.infants;
     }
-  }
-
-  arrayDurationDays(n: number): any[] {
-    return [...Array(n).keys()];
+    this.searchForm = new FormGroup({
+      'origin': new FormControl((searchParams!=null)?searchParams.origin:null, Validators.required),
+      'destination': new FormControl((searchParams!=null)?searchParams.destination:null, Validators.required),
+      'startingDay': new FormControl((searchParams!=null)?searchParams.startingDay:this.defaultStartingDay),
+      'duration': new FormControl((searchParams!=null)?searchParams.duration:this.defaultDuration),
+      'fromDate': new FormControl((searchParams!=null)?searchParams.fromDate:null, Validators.required),
+      'toDate': new FormControl((searchParams!=null)?searchParams.toDate:null, Validators.required),
+      'adults': new FormControl((searchParams!=null)?searchParams.adults:this.travellerTypes.get('adults').defaultValue),
+      'children': new FormControl((searchParams!=null)?searchParams.children:this.travellerTypes.get('children').defaultValue),
+      'infants': new FormControl((searchParams!=null)?searchParams.infants:this.travellerTypes.get('infants').defaultValue),
+    });
   }
 
   onSubmit() {
@@ -71,24 +108,22 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy, AfterViewCh
       this.travelPlannerService.setSearchParams(
         new SearchParams(
           this.selectedRoundTrip,
-          this.searchForm.controls['origin'].value,
+          this.searchForm.value.origin,
           this.originId,
-          this.searchForm.controls['destination'].value,
+          this.searchForm.value.destination,
           this.destinationId,
           this.searchForm.value.startingDay, 
-          this.searchForm.value.duration
+          this.searchForm.value.duration,
+          this.searchForm.value.adults,
+          this.searchForm.value.children,
+          this.searchForm.value.infants,
+          this.selectedClass,
+          this.searchForm.value.fromDate,
+          this.searchForm.value.toDate
         )
       );
 
       this.travelPlannerService.getFlights();
-        // .subscribe((results: FlightResult[]) => {
-        //   console.log(results);
-        //   // this.travelPlannerService.setResults(results);
-        //   // this.travelPlannerService.resultsChanged.next(results);
-        //   this.travelPlannerService.changeResults(results);
-        //   // this.router.navigate(['/flight-result']);
-        // });
-      this.travelPlannerService.changeResults([]);
       this.router.navigate(['/flight-result']);
     }
   }
@@ -123,17 +158,79 @@ export class FlightSearchFormComponent implements OnInit, OnDestroy, AfterViewCh
     }
   }
 
-  selectedOrigin(originId: string, origin: string) {
+  onSelectOrigin(originId: string, origin: string) {
     this.originId = originId
     this.searchForm.controls['origin'].setValue(origin);
   }
 
-  selectedDestination(destinationId: string, destination: string) {
+  onSelectDestination(destinationId: string, destination: string) {
     this.destinationId = destinationId;
     this.searchForm.controls['destination'].setValue(destination);
   }
 
-  ngOnDestroy() {
+  arrayDurationDays(n: number): any[] {
+    return [...Array(n).keys()];
+  }
+
+  decrement(travellerType: string) {
+    const currentValue = this.searchForm.value[travellerType];
+    if ((currentValue-1) >= this.travellerTypes.get(travellerType).minValue) {
+      this.searchForm.patchValue({[travellerType]: currentValue-1});
+      this.totalTravellers--;
+    }
+  }
+
+  increment(travellerType: string) {
+    const currentValue = this.searchForm.value[travellerType];
+    if ((currentValue+1) <= this.travellerTypes.get(travellerType).maxValue) {
+      this.searchForm.patchValue({[travellerType]: currentValue+1});
+      this.totalTravellers++;
+    }
+  }
+
+  onSelectClass(selectedClass: string) {
+    this.selectedClass = selectedClass;
+  }
+
+  onDateSelection(date: NgbDate) {
+    const dateStr = this.ngbDateAdapter.format(date);
+    if (!this.fromDate && !this.toDate) {
+      this.fromDate = date;
+      this.searchForm.patchValue({fromDate: dateStr});
+    } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
+      this.toDate = date;
+      this.searchForm.patchValue({toDate: dateStr});
+    } else {
+      this.toDate = null;
+      this.fromDate = date;
+      this.searchForm.patchValue({fromDate: dateStr});
+    }
+  }
+
+  // onToDateSelection(date: NgbDate) {
+  //   console.log(date);
+  //   if (!this.fromDate && !this.toDate) {
+  //     this.fromDate = date;
+  //     this.searchForm.patchValue({fromDate: this.fromDate});
+  //   } else if (this.fromDate && date.after(this.fromDate)) {
+  //     this.toDate = date;
+  //     this.searchForm.patchValue({toDate: this.toDate});
+  //   } else {
+  //     this.fromDate = date;
+  //     this.searchForm.patchValue({fromDate: this.fromDate});
+  //   }
+  // }
+
+  isHovered(date: NgbDate) {
+    return this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate);
+  }
+
+  isInside(date: NgbDate) {
+    return date.after(this.fromDate) && date.before(this.toDate);
+  }
+
+  isRange(date: NgbDate) {
+    return date.equals(this.fromDate) || date.equals(this.toDate) || this.isInside(date) || this.isHovered(date);
   }
 
 }

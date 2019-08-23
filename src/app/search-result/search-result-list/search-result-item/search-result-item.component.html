@@ -2,7 +2,7 @@
 
   <div class="cluster-content d-flex flex-column">
 
-    <div class="sub-cluster d-flex flex-column">
+    <div class="d-flex flex-column">
 
       <div class="route-choice-header">
         <span class="route-type-header route-top-header d-flex flex-column">
@@ -64,8 +64,8 @@
       </ul>
 
     </div>
-      
-    <div class="sub-cluster last">
+    
+    <div class="d-flex flex-column last" *ngIf="flight.InboundLeg.Carriers">
 
       <div class="route-choice-header">
         <span class="route-type-header d-flex flex-column">
