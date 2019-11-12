@@ -70,3 +70,40 @@
 .custom-day.faded {
   background-color: rgba(2, 117, 216, 0.5);
 }
+
+.custom-day.outside, .custom-day.outside:hover {
+  background-color: white;
+  color: #212529;
+  opacity: .5;
+}
+
+.starting-day-width {
+  width: 130px;
+}
+
+.duration-width {
+  width: 70px;
+}
+
+.date-width {
+  width: 150px;
+}
+
+.not-vertical:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -1px;
+}
+
+.not-vertical:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.not-rounded {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-left: -1px;
+}

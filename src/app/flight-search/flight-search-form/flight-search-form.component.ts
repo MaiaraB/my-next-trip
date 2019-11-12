@@ -2,13 +2,13 @@ import { SearchParams } from '../../models/search-params.model';
 import { SkyscannerPlace } from '../../models/skyscanner-place.model';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { NgbDateStruct, NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig } from '@ng-bootstrap/ng-bootstrap';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
+import { NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig, NgbDatepickerConfig, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
 import { SkyscannerService } from 'src/app/shared/skyscanner.service';
 import { CabinClass } from './../../models/cabin-class.enum';
-import { config } from 'rxjs';
+import { searchIntervalTooBig } from './../../shared/search-interval-too-big.directive';
 
 @Component({
   selector: 'app-flight-search-form',
@@ -20,6 +20,7 @@ export class FlightSearchFormComponent implements OnInit {
   toDate: NgbDate;
   hoveredDate: NgbDate;
   displayMonths = 2;
+  caller = 'from';
 
   searchForm: FormGroup;
   @Input() vertical: boolean;
@@ -51,13 +52,15 @@ export class FlightSearchFormComponent implements OnInit {
   keys = Object.keys;
   cabinClasses = CabinClass;
 
-  constructor(private travelPlannerService: TravelPlannerService, 
+  constructor(private fb: FormBuilder,
+              private travelPlannerService: TravelPlannerService, 
               private skyscannerService: SkyscannerService,
               private router: Router,
               private calendar: NgbCalendar,
               private ngbDateAdapter: NgbDateParserFormatter,
-              private ngbPopoverConfig: NgbPopoverConfig) {
-    this.ngbPopoverConfig.popoverClass = 'popover-bigger-width';
+              private ngbPopoverConfig: NgbPopoverConfig,
+              private ngbDatepickerConfig: NgbDatepickerConfig) {
+    this.ngbPopoverConfig.popoverClass = 'popover-style';
     this.fromDate = calendar.getToday();
     this.toDate = calendar.getNext(calendar.getToday(), 'd', 30);
   }
@@ -67,8 +70,11 @@ export class FlightSearchFormComponent implements OnInit {
     this.selectedClass = 'economy';
     this.originSuggestions = [];
     this.destinationSuggestions = [];
-    if(window.innerWidth < 768) {
+    if (window.innerWidth < 768) {
       this.vertical = true;
+      this.displayMonths = 1;
+    }
+    if (this.vertical) {
       this.displayMonths = 1;
     }
 
@@ -84,17 +90,21 @@ export class FlightSearchFormComponent implements OnInit {
       this.selectedOneWay = !searchParams.roundTrip;
       this.selectedClass = searchParams.cabinClass;
       this.totalTravellers = searchParams.adults + searchParams.children + searchParams.infants;
+      this.fromDate = searchParams.fromDate;
+      this.toDate = searchParams.toDate;
     }
-    this.searchForm = new FormGroup({
-      'origin': new FormControl((searchParams!=null)?searchParams.origin:null, Validators.required),
-      'destination': new FormControl((searchParams!=null)?searchParams.destination:null, Validators.required),
-      'startingDay': new FormControl((searchParams!=null)?searchParams.startingDay:this.defaultStartingDay),
-      'duration': new FormControl((searchParams!=null)?searchParams.duration:this.defaultDuration),
-      'fromDate': new FormControl((searchParams!=null)?searchParams.fromDate:this.ngbDateAdapter.format(this.fromDate), Validators.required),
-      'toDate': new FormControl((searchParams!=null)?searchParams.toDate:this.ngbDateAdapter.format(this.toDate), Validators.required),
-      'adults': new FormControl((searchParams!=null)?searchParams.adults:this.travellerTypes.get('adults').defaultValue),
-      'children': new FormControl((searchParams!=null)?searchParams.children:this.travellerTypes.get('children').defaultValue),
-      'infants': new FormControl((searchParams!=null)?searchParams.infants:this.travellerTypes.get('infants').defaultValue),
+    this.searchForm = this.fb.group({
+      origin: [(searchParams!=null)?searchParams.origin:null, Validators.required],
+      destination: [(searchParams!=null)?searchParams.destination:null, Validators.required],
+      startingDay: [(searchParams!=null)?searchParams.startingDay:this.defaultStartingDay],
+      duration: [(searchParams!=null)?searchParams.duration:this.defaultDuration],
+      dates: this.fb.group({
+        fromDate: [this.fromDate, Validators.required],
+        toDate: [this.toDate, Validators.required]
+      }, { validator: searchIntervalTooBig(this.calendar) }),
+      adults: [(searchParams!=null)?searchParams.adults:this.travellerTypes.get('adults').defaultValue],
+      children: [(searchParams!=null)?searchParams.children:this.travellerTypes.get('children').defaultValue],
+      infants: [(searchParams!=null)?searchParams.infants:this.travellerTypes.get('infants').defaultValue],
     });
   }
 
@@ -118,8 +128,8 @@ export class FlightSearchFormComponent implements OnInit {
           this.searchForm.value.children,
           this.searchForm.value.infants,
           this.selectedClass,
-          this.searchForm.value.fromDate,
-          this.searchForm.value.toDate
+          this.fromDate,
+          this.toDate
         )
       );
 
@@ -172,7 +182,7 @@ export class FlightSearchFormComponent implements OnInit {
     return [...Array(n).keys()];
   }
 
-  decrement(travellerType: string) {
+  decrementTravellers(travellerType: string) {
     const currentValue = this.searchForm.value[travellerType];
     if ((currentValue-1) >= this.travellerTypes.get(travellerType).minValue) {
       this.searchForm.patchValue({[travellerType]: currentValue-1});
@@ -180,7 +190,7 @@ export class FlightSearchFormComponent implements OnInit {
     }
   }
 
-  increment(travellerType: string) {
+  incrementTravellers(travellerType: string) {
     const currentValue = this.searchForm.value[travellerType];
     if ((currentValue+1) <= this.travellerTypes.get(travellerType).maxValue) {
       this.searchForm.patchValue({[travellerType]: currentValue+1});
@@ -192,45 +202,65 @@ export class FlightSearchFormComponent implements OnInit {
     this.selectedClass = selectedClass;
   }
 
-  onDateSelection(date: NgbDate) {
-    const dateStr = this.ngbDateAdapter.format(date);
-    if (!this.fromDate && !this.toDate) {
+  toggleDatePicker(popover, caller: string) {
+    this.caller = caller;
+    popover.open({caller});
+  }
+
+  onDateSelection(popover, date: NgbDate) {
+    if (this.caller === 'from') {
       this.fromDate = date;
-      this.searchForm.patchValue({fromDate: dateStr});
-    } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
-      this.toDate = date;
-      this.searchForm.patchValue({toDate: dateStr});
+      if (this.toDate.before(date)) {
+        this.toDate = date;
+      }
+      this.caller = 'to';
     } else {
-      this.toDate = null;
-      this.fromDate = date;
-      this.searchForm.patchValue({fromDate: dateStr});
+      if (date.before(this.fromDate)) {
+        this.fromDate = date;
+      } else {
+        this.toDate = date;
+        popover.close();
+      }
     }
   }
 
-  // onToDateSelection(date: NgbDate) {
-  //   console.log(date);
-  //   if (!this.fromDate && !this.toDate) {
-  //     this.fromDate = date;
-  //     this.searchForm.patchValue({fromDate: this.fromDate});
-  //   } else if (this.fromDate && date.after(this.fromDate)) {
-  //     this.toDate = date;
-  //     this.searchForm.patchValue({toDate: this.toDate});
-  //   } else {
-  //     this.fromDate = date;
-  //     this.searchForm.patchValue({fromDate: this.fromDate});
-  //   }
-  // }
+  onDateHoveredIn(date: NgbDate) {
+    this.hoveredDate = date;
+    if (this.caller === 'to' && (date.after(this.fromDate) || date.equals(this.fromDate))) {
+      this.searchForm.patchValue({ dates: { toDate: date } });
+    } else {
+      this.searchForm.patchValue({ dates: { fromDate: date } });
+    }
+  }
+
+  onDateHoveredOut() {
+    this.searchForm.patchValue({ dates: { fromDate: this.fromDate}});
+    this.searchForm.patchValue({ dates: { toDate: this.toDate}});
+  }
 
   isHovered(date: NgbDate) {
-    return this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate);
+    const fromDate = this.searchForm.value.dates.fromDate;
+    const toDate = this.searchForm.value.dates.toDate;
+    return (fromDate && !toDate && this.hoveredDate && date.after(fromDate) && date.before(this.hoveredDate)) ||
+           (toDate && !fromDate && this.hoveredDate && date.after(this.hoveredDate) && date.before(toDate));
   }
 
   isInside(date: NgbDate) {
-    return date.after(this.fromDate) && date.before(this.toDate);
+    const fromDate = this.searchForm.value.dates.fromDate;
+    const toDate = this.searchForm.value.dates.toDate;
+    return date.after(fromDate) && date.before(toDate);
   }
 
   isRange(date: NgbDate) {
-    return date.equals(this.fromDate) || date.equals(this.toDate) || this.isInside(date) || this.isHovered(date);
+    const fromDate = this.searchForm.value.dates.fromDate;
+    const toDate = this.searchForm.value.dates.toDate;
+    return date.equals(fromDate) || date.equals(toDate) || this.isInside(date) || this.isHovered(date);
+  }
+
+  isOutside = (date: NgbDate) => {
+    let fromDatePlusThreeMonths = this.calendar.getNext(this.fromDate, 'd', 90);
+    return date.before(this.calendar.getToday()) || 
+           (date.after(fromDatePlusThreeMonths) && this.caller === 'to');
   }
 
 }

@@ -19,6 +19,7 @@ html, body {
   border-color: #DD5C29;
 }
 
-.popover-bigger-width {
+.popover-style {
   max-width: 1000px!important;
+  /* position:fixed!important; */
 }

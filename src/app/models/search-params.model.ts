@@ -1,4 +1,5 @@
 import { CabinClass } from './cabin-class.enum';
+import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 export class SearchParams {
   public roundTrip: boolean;
   public origin: string;
@@ -11,13 +12,13 @@ export class SearchParams {
   public children: number;
   public infants: number;
   public cabinClass: string;
-  public fromDate: string;
-  public toDate: string;
+  public fromDate: NgbDate;
+  public toDate: NgbDate;
 
   constructor(roundTrip: boolean, origin: string, originID: string, destination: string, 
               destinationID: string, startingDay: string, duration: string,
               adults: number, children: number, infants: number, cabinClass: string,
-              fromDate: string, toDate: string) {
+              fromDate: NgbDate, toDate: NgbDate) {
     this.roundTrip = roundTrip;
     this.origin = origin;
     this.originID = originID;

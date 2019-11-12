@@ -15,6 +15,7 @@ export class SearchResultListComponent implements OnInit {
   flights: FlightResult[];
   subscription: Subscription;
   isLoading: boolean;
+  hasMore = true;
   sortingOptions = ["Cheapest", "Earliest"];
   sortedBy = "Cheapest";
 
@@ -48,6 +49,9 @@ export class SearchResultListComponent implements OnInit {
 
   onLoadMore() {
     this.currentFlights = this.flights.slice(0, this.currentFlights.length+10);
+    if (this.currentFlights.length === this.flights.length) {
+      this.hasMore = false;
+    }
   }
 
   onChangeSortedBy(sortedBy: string) {

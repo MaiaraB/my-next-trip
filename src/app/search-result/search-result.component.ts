@@ -10,9 +10,15 @@ import { TravelPlannerService } from './../shared/travel-planner.service';
 })
 export class SearchResultComponent implements OnInit {
 
+  vertical: boolean;
+  
   constructor(private travelPlannerService: TravelPlannerService) { }
 
   ngOnInit() {
+    this.vertical = false;
+    if(window.innerWidth < 768) {
+      this.vertical = true;
+    }
   }
 
 }

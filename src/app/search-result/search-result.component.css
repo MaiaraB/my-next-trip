@@ -1,3 +1,7 @@
+.form-width {
+  max-width: 330px;
+}
+
 .result-list {
   flex-grow: 1;
   flex-shrink: 0;

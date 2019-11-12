@@ -34,7 +34,7 @@
                 <span class="travellers-input-age">{{ travellerType.value.ageRange }}</span>
               </div>
               <div>
-                <button type="button" class="number-input-button" (click)="decrement(travellerType.key)">
+                <button type="button" class="number-input-button" (click)="decrementTravellers(travellerType.key)">
                   <fa-icon icon="minus"></fa-icon>
                 </button>
                 <input class="travellers-input-number"
@@ -42,7 +42,7 @@
                 [id]="travellerType.key"
                 readonly
                 [formControlName]="travellerType.key">
-                <button type="button" class="number-input-button" (click)="increment(travellerType.key)">
+                <button type="button" class="number-input-button" (click)="incrementTravellers(travellerType.key)">
                   <fa-icon icon="plus"></fa-icon>
                 </button>
               </div>
@@ -68,7 +68,8 @@
         </ng-template>
       </div>
     </div>
-    <div class="d-flex flex-column ml-0" [class.input-group]="!vertical" [class.input-group-lg]="!vertical" [class.flex-sm-column]="!vertical" [class.flex-md-row]="!vertical">
+    <!-- [class.input-group]="!vertical" [class.input-group-lg]="!vertical" -->
+    <div class="d-flex flex-column ml-0" [class.flex-sm-column]="!vertical" [class.flex-md-row]="!vertical">
       <!-- ORIGIN INPUT -->
       <input type="text" 
             id="origin" 
@@ -78,7 +79,8 @@
             placeholder="Origin"
             (input)="onOriginChange($event.target.value)"
             [ngbPopover]="popOriginSugestions" [popoverTitle]="popTitle" placement="bottom"
-            [class.mb-2]="vertical">
+            [class.mb-2]="vertical"
+            [class.not-vertical]="!vertical">
         
       <ng-template #popOriginSugestions>
         <div *ngIf="!originTooSmall; else noSuggestions" class="list-group">
@@ -104,7 +106,8 @@
              placeholder="Destination"
              (input)="onDestinationChange($event.target.value)"
              [ngbPopover]="popDestinationSugestions" [popoverTitle]="popTitle" placement="bottom"
-             [class.mb-2]="vertical">
+             [class.mb-2]="vertical"
+             [class.not-vertical]="!vertical">
       <ng-template #popDestinationSugestions>
         <div *ngIf="!destinationTooSmall; else noSuggestions" class="list-group">
           <button type="button" class="list-group-item list-group-item-action" 
@@ -121,52 +124,71 @@
       </ng-template>
 
       <!-- DATE INPUT -->
-      <input type="text" 
-             id="fromDate"
-             class="form-control form-control-lg"
-             placeholder="yyyy-mm-dd" 
-             autocomplete="off"
-             formControlName='fromDate'
-             [ngbPopover]="popDatePicker" placement="bottom" [autoClose]="'outside'" 
-             [class.mb-2]="vertical">
+      <div class="d-flex"
+           [class.mb-2]="vertical"
+           formGroupName="dates"
+           [ngbPopover]="popDatePicker" placement="bottom" [autoClose]="'outside'" 
+           triggers="manual" #pdp="ngbPopover">
+
+        <input id="fromDate"
+              class="form-control form-control-lg"
+              placeholder="yyyy-mm-dd" 
+              autocomplete="off"
+              formControlName='fromDate'
+              (click)="toggleDatePicker(pdp, 'from')"
+              [class.date-width]="!vertical"
+              [class.not-vertical]="vertical"
+              [class.not-rounded]="!vertical"
+              ngbDatepicker>
+        
+        <input id="toDate"
+              class="form-control form-control-lg"
+              placeholder="yyyy-mm-dd" 
+              autocomplete="off"
+              formControlName="toDate"
+              (click)="toggleDatePicker(pdp, 'to')"
+              [class.date-width]="!vertical"
+              [class.not-vertical]="vertical"
+              [class.not-rounded]="!vertical"
+              ngbDatepicker>
+              
+        <ng-template #popDatePicker let-caller="caller" class="d-flex flex-column">
+          <ngb-datepicker ngbDatepicker
+                          [displayMonths]="displayMonths" 
+                          [navigation]="'select'" 
+                          [dayTemplate]="t"
+                          [outsideDays]="'hidden'"
+                          [startDate]="fromDate"
+                          [markDisabled]="isOutside"
+                          (select)="onDateSelection(pdp, $event)">
+          </ngb-datepicker>
+          <div *ngIf="!searchForm.controls.dates.valid" class="alert alert-danger mt-2 mb-0">The search interval should be<br *ngIf="vertical"> less than 3 months</div>
+        </ng-template>
       
-      <input type="text" 
-             id="toDate"
-             class="form-control form-control-lg"
-             placeholder="yyyy-mm-dd" 
-             autocomplete="off"
-             formControlName="toDate"
-             [ngbPopover]="popDatePicker" placement="bottom" [autoClose]="'outside'" 
-             [class.mb-2]="vertical">
-      
-      <ng-template #popDatePicker>
-        <ngb-datepicker ngbDatepicker
-                        [displayMonths]="displayMonths" 
-                        navigation="arrows" 
-                        [dayTemplate]="t"
-                        outsideDays="hidden"
-                        (select)="onDateSelection($event)">
-        </ngb-datepicker>
-      </ng-template>
-      
-      <ng-template #t let-date let-focused="focused">
-        <span class="custom-day"
-              [class.focused]="focused"
-              [class.range]="isRange(date)"
-              [class.faded]="isHovered(date) || isInside(date)"
-              (mouseenter)="hoveredDate = date"
-              (mouseleave)="hoveredDate = null">
-          {{ date.day }}
-        </span>
-      </ng-template>
+        <ng-template #t let-date let-focused="focused" let-disabled="disabled">
+          <span class="custom-day"
+                [class.focused]="focused"
+                [class.outside]="disabled"
+                [class.range]="isRange(date)"
+                [class.faded]="isHovered(date) || isInside(date)"
+                (mouseenter)="onDateHoveredIn(date)"
+                (mouseleave)="onDateHoveredOut()">
+                {{ date.day }}
+          </span>
+        </ng-template>
+
+      </div>
        
       <!-- STARTING DAY INPUT -->
-      <select [class.form-control]="vertical"
-              [class.form-control-lg]="vertical"
-              [class.mb-2]="vertical"
+      <select class="form-control form-control-lg"
               [class.custom-select]="!vertical"
+              [class.custom-select-lg]="!vertical"
+              [class.not-vertical]="!vertical"
+              [class.mb-2]="vertical"
+              [class.starting-day-width]="!vertical"
               id="startingDay"
-              formControlName="startingDay">
+              formControlName="startingDay"
+              data-toggle="tooltip" data-placement="bottom" title="The starting day of your trip">
         <option value="1">Monday</option>
         <option value="2">Tuesday</option>
         <option value="3">Wednesday</option>
@@ -178,24 +200,26 @@
 
       <!-- DURATION INPUT -->
       <ng-template [ngIf]="selectedRoundTrip">
-        <select [class.form-control]="vertical"
-                [class.form-control-lg]="vertical"
-                [class.mb-2]="vertical"
+        <select class="form-control form-control-lg"
                 [class.custom-select]="!vertical"
+                [class.custom-select-lg]="!vertical"
+                [class.not-vertical]="!vertical"
+                [class.mb-2]="vertical"
+                [class.duration-width]="!vertical"
                 id="duration"
-                formControlName="duration">
+                formControlName="duration"
+                data-toggle="tooltip" data-placement="bottom" title="The duration of your trip in days">
           <!-- <option selected>Days</option> -->
           <option *ngFor="let n of arrayDurationDays(30)" value="{{n+1}}">{{n+1}}</option>
         </select>
       </ng-template>
 
-      <div [class.input-group-append]="!vertical">
-        <button type="submit" 
-                class="btn btn-primary" 
-                [class.btn-lg]="vertical"
-                [class.btn-block]="vertical"
-                [disabled]="!searchForm.valid">Search</button>
-      </div>
+      <button type="submit" 
+              class="btn btn-primary" 
+              [class.btn-lg]="vertical"
+              [class.btn-block]="vertical"
+              [class.not-vertical]="!vertical"
+              [disabled]="!searchForm.valid">Search</button>
     </div>
   </form>
 </div>
