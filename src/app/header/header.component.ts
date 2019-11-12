@@ -11,7 +11,6 @@ import { Currency } from '../models/currency.model';
   styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
-  // collapsed = true;
   loadedCountries: Country[] = [];
   loadedCurrencies: Currency[] = [];
   selectedCountry: string;
@@ -22,7 +21,6 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     this.skyscannerService.fetchCountries().subscribe(countries => {
       this.loadedCountries = countries;
-      // console.log(this.loadedCountries);
     });
 
     this.skyscannerService.fetchCurrencies().subscribe(currencies => {

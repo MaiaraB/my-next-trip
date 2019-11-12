@@ -3,12 +3,10 @@
   border-radius: 8px;
   margin: 0 0 20px;
   background-color: #fff;
-  /* width: 980px; */
 }
 
 .cluster-content {
   flex: 1;
-  /* width: 100%; */
 }
 
 .last {
@@ -81,7 +79,6 @@
 .itinerary-wrapper {
   display: grid;
   grid-template-columns: repeat(3,33.3%);
-  /* height: 50px; */
   border: 1px solid #fff;
   padding: 0 10px;
 }
@@ -100,7 +97,6 @@
   height: 24px;
   width: 24px;
   margin-right: 4px;
-  /* margin-bottom: -6px; */
   vertical-align:text-bottom;
 }
 
@@ -162,7 +158,6 @@ font-weight: 500;
   flex-direction: column;
   box-sizing: content-box;
   width: 100%;
-  /* vertical-align: top; */
   text-align: left;
 }
 
@@ -175,7 +170,6 @@ font-weight: 500;
 .main-fare {
   display: flex;
   size: 24px;
-  /* padding-top: 5px; */
   color: #444;
 }
 

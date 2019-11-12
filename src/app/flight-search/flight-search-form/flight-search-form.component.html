@@ -1,6 +1,7 @@
 <div class="d-flex flex-column justify-content-center align-items-center mb-3">
   <form [formGroup]="searchForm" (ngSubmit)="onSubmit()">
     <div class="d-flex flex-column mb-1" [class.flex-md-row]="!vertical" >
+      
       <!-- ONE WAY OR ROUND TRIP INPUT -->
       <div class="btn-group btn-group-toggle">
         <label class="btn btn-outline-secondary" [ngClass]="{'pressed': selectedRoundTrip , 'un-pressed': !selectedRoundTrip}">
@@ -17,6 +18,7 @@
                  (click)="onClickOneWay()">One Way
         </label>
       </div>
+
       <!-- TRAVELLERS INPUT -->
       <div class="d-flex">
         <button type="button"
@@ -50,6 +52,7 @@
           </div>
         </ng-template>
       </div>
+
       <!-- CABIN CLASS INPUT -->
       <div class="d-flex">
         <button type="button" 
@@ -68,8 +71,8 @@
         </ng-template>
       </div>
     </div>
-    <!-- [class.input-group]="!vertical" [class.input-group-lg]="!vertical" -->
     <div class="d-flex flex-column ml-0" [class.flex-sm-column]="!vertical" [class.flex-md-row]="!vertical">
+      
       <!-- ORIGIN INPUT -->
       <input type="text" 
             id="origin" 
@@ -209,7 +212,6 @@
                 id="duration"
                 formControlName="duration"
                 data-toggle="tooltip" data-placement="bottom" title="The duration of your trip in days">
-          <!-- <option selected>Days</option> -->
           <option *ngFor="let n of arrayDurationDays(30)" value="{{n+1}}">{{n+1}}</option>
         </select>
       </ng-template>

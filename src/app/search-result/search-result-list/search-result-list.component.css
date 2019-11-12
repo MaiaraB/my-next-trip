@@ -1,7 +1,5 @@
 .result-list {
-  /* width: 100%; */
   flex-grow: 1;
-  /* margin-left: 20px; */
 }
 
 .sorting-label {
