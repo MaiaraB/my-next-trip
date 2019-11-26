@@ -19,10 +19,6 @@
   min-width: 120px;
 }
 
-.travellers-input {
-
-}
-
 .travellers-input-label {
   display: inline-block;
 }
@@ -41,14 +37,6 @@
   border: none;
   text-align: center;
 }
-
-/* .form-control {
-  border-color: #DD5C29;
-}
-
-.custom-select {
-  border-color: #DD5C29;
-} */
 
 .custom-day {
   text-align: center;

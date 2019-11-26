@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 
-import { SkyscannerService } from './../shared/skyscanner.service';
 import { TravelPlannerService } from './../shared/travel-planner.service';
 import { Country } from '../models/country.model';
 import { Currency } from '../models/currency.model';
@@ -16,14 +15,14 @@ export class HeaderComponent implements OnInit {
   selectedCountry: string;
   selectedCurrency: string;
 
-  constructor(private skyscannerService: SkyscannerService, private travelPlannerService: TravelPlannerService) {}
+  constructor(private travelPlannerService: TravelPlannerService) {}
 
   ngOnInit() {
-    this.skyscannerService.fetchCountries().subscribe(countries => {
+    this.travelPlannerService.fetchCountries().subscribe(countries => {
       this.loadedCountries = countries;
     });
 
-    this.skyscannerService.fetchCurrencies().subscribe(currencies => {
+    this.travelPlannerService.fetchCurrencies().subscribe(currencies => {
       this.loadedCurrencies = currencies;
     });
 

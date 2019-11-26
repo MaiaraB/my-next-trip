@@ -6,7 +6,6 @@ import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms'
 import { NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig, NgbDatepickerConfig, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
-import { SkyscannerService } from 'src/app/shared/skyscanner.service';
 import { CabinClass } from './../../models/cabin-class.enum';
 import { searchIntervalTooBig } from './../../shared/search-interval-too-big.directive';
 
@@ -26,7 +25,7 @@ export class FlightSearchFormComponent implements OnInit {
   @Input() vertical: boolean;
 
   defaultStartingDay = '5';
-  defaultDuration = '2';
+  defaultDuration = '3';
 
   selectedRoundTrip: boolean = true;
   selectedOneWay: boolean = false;
@@ -53,8 +52,7 @@ export class FlightSearchFormComponent implements OnInit {
   cabinClasses = CabinClass;
 
   constructor(private fb: FormBuilder,
-              private travelPlannerService: TravelPlannerService, 
-              private skyscannerService: SkyscannerService,
+              private travelPlannerService: TravelPlannerService,
               private router: Router,
               private calendar: NgbCalendar,
               private ngbDateAdapter: NgbDateParserFormatter,
@@ -153,7 +151,7 @@ export class FlightSearchFormComponent implements OnInit {
       this.originTooSmall = true;
     } else {
       this.originTooSmall = false;
-      this.skyscannerService.fetchPlaces(originValue)
+      this.travelPlannerService.fetchPlaces(originValue)
         .subscribe((places: SkyscannerPlace[]) => this.originSuggestions = places)
     }
   }
@@ -163,7 +161,7 @@ export class FlightSearchFormComponent implements OnInit {
       this.destinationTooSmall = true;
     } else {
       this.destinationTooSmall = false
-      this.skyscannerService.fetchPlaces(destionationValue)
+      this.travelPlannerService.fetchPlaces(destionationValue)
         .subscribe((places: SkyscannerPlace[]) => this.destinationSuggestions = places)
     }
   }
