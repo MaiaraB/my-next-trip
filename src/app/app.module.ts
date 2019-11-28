@@ -21,6 +21,7 @@ import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { FlightSearchFormComponent } from './flight-search/flight-search-form/flight-search-form.component';
 import { DropdownDirective } from './shared/dropdown.directive';
 import { DurationPipe } from './shared/duration.pipe';
+import { ApiResponseErrorComponent } from './api-response-error/api-response-error.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
@@ -34,6 +35,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     FlightSearchFormComponent,
     DropdownDirective,
     DurationPipe,
+    ApiResponseErrorComponent,
     PageNotFoundComponent
   ],
   imports: [

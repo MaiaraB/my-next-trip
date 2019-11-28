@@ -132,7 +132,7 @@ export class FlightSearchFormComponent implements OnInit {
       );
 
       this.travelPlannerService.getFlights();
-      this.router.navigate(['/flight-result']);
+      this.router.navigate(['/search-result']);
     }
   }
 

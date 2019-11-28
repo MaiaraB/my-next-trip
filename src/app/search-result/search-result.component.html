@@ -3,6 +3,6 @@
     <app-flight-search-form class="d-flex flex-column flex-grow-1" [vertical]="true"></app-flight-search-form>
   </div>
   <div class="d-flex result-list ml-3" [class.ml-4]="!vertical">
-    <app-search-result-list class="d-flex flex-grow-1"></app-search-result-list>
+    <router-outlet></router-outlet>
   </div>
 </div>

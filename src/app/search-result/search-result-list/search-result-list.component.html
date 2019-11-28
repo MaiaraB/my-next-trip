@@ -1,9 +1,14 @@
-<div class="result-list d-flex flex-column justify-content-center mb-3">
-  <div class="d-flex justify-content-end" *ngIf="!isLoading">
-    <label class="sorting-label">Sorted by</label>
-    <select class="sorting-selector" name="sortBy" id="sortBy" (change)="onChangeSortedBy($event.target.value)">
-      <option *ngFor="let sortingOption of sortingOptions" [value]="sortingOption">{{ sortingOption }}</option>
-    </select>
+<div class="d-flex flex-grow-1 flex-column justify-content-center mb-3">
+  <div class="d-flex justify-content-between" *ngIf="!isLoading">
+    <div class="d-flex">
+      <span class="sorting-label">{{this.flights.length | i18nPlural: resultsPluralMapping}}</span>
+    </div>
+    <div class="d-flex">
+      <label class="sorting-label">Sorted by</label>
+      <select class="sorting-selector" name="sortBy" id="sortBy" (change)="onChangeSortedBy($event.target.value)">
+        <option *ngFor="let sortingOption of sortingOptions" [value]="sortingOption">{{ sortingOption }}</option>
+      </select>
+    </div>
   </div>
   <app-search-result-item *ngFor="let flight of currentFlights" [flight]="flight"></app-search-result-item>
   <div class="d-flex justify-content-center" *ngIf="isLoading">

@@ -17,6 +17,7 @@ export class TravelPlannerService {
   lastSearch: SearchParams;
   lastResults: FlightResult[] = [];
   resultsChanged = new ReplaySubject<FlightResult[]>();
+  responseError = new ReplaySubject<boolean>();
   private currentCountry = 'UK';
   private currentCurrency = 'GBP';
 
@@ -95,16 +96,18 @@ export class TravelPlannerService {
       // case for the chunks with the results
       if (index != lastIndex) {
         partIndex++;
-        results.push(...JSON.parse(xhr.responseText.substring(lastIndex+1, index)));
-        that.changeResults(results);
-        that.progressSource.next(partIndex/responseSize*100);
+        if (xhr.responseText.substring(lastIndex+1, index) !== null) {
+          results.push(...JSON.parse(xhr.responseText.substring(lastIndex+1, index)));
+          that.changeResults(results);
+          that.progressSource.next(partIndex/responseSize*100);
+        }
       }
       lastIndex = index;
     }
 
     xhr.onload = function(pe) {
-      if (xhr.responseText === 'SearchIntervalTooBig') {
-
+      if (xhr.status !== 200) {
+        that.responseError.next(true);
       }
       that.progressSource.next(0);
       that.lastSearch = null;

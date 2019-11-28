@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { Subscription, Observable } from 'rxjs';
 
@@ -6,6 +7,9 @@ import { FlightResult } from '../../models/flight-result.model';
 
 @Component({
   selector: 'app-search-result-list',
+  host: {
+    class: 'd-flex flex-grow-1'
+  },
   templateUrl: './search-result-list.component.html',
   styleUrls: ['./search-result-list.component.css']
 })
@@ -13,18 +17,25 @@ export class SearchResultListComponent implements OnInit {
 
   currentFlights: FlightResult[];
   flights: FlightResult[];
-  subscription: Subscription;
+  flightsSubscription: Subscription;
+  errorSubscription: Subscription;
   isLoading: boolean;
   hasMore = true;
   sortingOptions = ["Cheapest", "Earliest"];
   sortedBy = "Cheapest";
+  resultsPluralMapping: 
+    {[k: string]: string} = {
+      '=1' :  '1 result',
+      'other' : '# results'
+    };
 
-  constructor(private travelPlannerService: TravelPlannerService) {}
+  constructor(private travelPlannerService: TravelPlannerService,
+              private router: Router) {}
 
   ngOnInit() {
     this.isLoading = true;
     this.currentFlights = [];
-    this.subscription = this.travelPlannerService.resultsChanged
+    this.flightsSubscription = this.travelPlannerService.resultsChanged
       .subscribe(
         (flights: FlightResult[]) => {
           this.flights = this.sortResults(flights);
@@ -41,10 +52,18 @@ export class SearchResultListComponent implements OnInit {
     if (this.flights.length > 0) {
       this.isLoading = false;
     }
+
+    this.errorSubscription = this.travelPlannerService.responseError.subscribe(
+      (responseError: boolean) => {
+        if (responseError) {
+          this.router.navigate(['api-response-error']);
+        }
+      }
+    );
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.flightsSubscription.unsubscribe();
   }
 
   onLoadMore() {
