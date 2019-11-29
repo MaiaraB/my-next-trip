@@ -76,44 +76,61 @@ export class TravelPlannerService {
       params += '&infants' + this.lastSearch.infants;
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', `${this.basePath}/flights?${params}`, true);
-
+    let that = this;
     let lastIndex = -1;
     let responseSize = 0;
-    let partIndex = 0;
-    let that = this;
+    let chunkIndex = 0;
     let results: FlightResult[] = [];
 
-    xhr.onprogress = function(pe) {
-      let index = that.searchEscape(xhr.responseText, lastIndex);
-      // case for the first chunk with the response size
-      if (index != lastIndex && lastIndex == -1) {
-        responseSize = parseInt(xhr.responseText.substring(lastIndex+1, index))
-        lastIndex = index;
-        index = that.searchEscape(xhr.responseText, lastIndex);
+    let processChunkedResponse = function(response: Response) {
+      if (response.status !== 200) {
+        that.responseError.next(true);
+        return;
       }
-      // case for the chunks with the results
-      if (index != lastIndex) {
-        partIndex++;
-        if (xhr.responseText.substring(lastIndex+1, index) !== null) {
-          results.push(...JSON.parse(xhr.responseText.substring(lastIndex+1, index)));
-          that.changeResults(results);
-          that.progressSource.next(partIndex/responseSize*100);
+
+      let text = '';
+      let reader = response.body.getReader()
+      let decoder = new TextDecoder();
+  
+      let appendChunks = function(result: any) {
+        let chunk = decoder.decode(result.value || new Uint8Array, {stream: !result.done});
+        text += chunk;
+        let index = that.searchEscape(text, lastIndex);
+        // case for the first chunk with the response size
+        if (index != lastIndex && lastIndex == -1) {
+          responseSize = parseInt(text.substring(lastIndex+1, index))
+          lastIndex = index;
+          index = that.searchEscape(text, lastIndex);
+        }
+        // case for the chunks with the results
+        if (index != lastIndex) {
+          chunkIndex++;
+          if (text.substring(lastIndex+1, index) !== null) {
+            results.push(...JSON.parse(text.substring(lastIndex+1, index)));
+            that.changeResults(results);
+            that.progressSource.next(chunkIndex/responseSize*100);
+          }
+        }
+        lastIndex = index;
+
+        if (result.done) {
+          return text;
+        } else {
+          return reader.read().then(appendChunks);;
         }
       }
-      lastIndex = index;
+      return reader.read().then(appendChunks);;
     }
 
-    xhr.onload = function(pe) {
-      if (xhr.status !== 200) {
-        that.responseError.next(true);
-      }
+    let onChunkedResponseComplete = function(result: any) {
       that.progressSource.next(0);
       that.lastSearch = null;
     }
 
-    xhr.send();
+    fetch(`${this.basePath}/flights?${params}`)
+      .then(processChunkedResponse)
+      .then(onChunkedResponseComplete)
+      .catch(err => console.error(err));
 
   }
 
