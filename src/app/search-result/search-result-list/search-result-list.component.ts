@@ -15,16 +15,19 @@ import { FlightResult } from '../../models/flight-result.model';
 })
 export class SearchResultListComponent implements OnInit {
 
-  currentFlights: FlightResult[];
+  currentShowingFlights: FlightResult[];
+  currentShowingSize = 10;
   flights: FlightResult[];
   flightsSubscription: Subscription;
   errorSubscription: Subscription;
+  finishedResponseSubscription: Subscription;
   isLoading: boolean;
-  hasMore = true;
+  hasMore: boolean;
   sortingOptions = ["Cheapest", "Earliest"];
   sortedBy = "Cheapest";
   resultsPluralMapping: 
     {[k: string]: string} = {
+      '=0' : 'Sorry, no results found',
       '=1' :  '1 result',
       'other' : '# results'
     };
@@ -34,21 +37,36 @@ export class SearchResultListComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading = true;
-    this.currentFlights = [];
+    this.hasMore = false;
+    this.currentShowingFlights = [];
     this.flightsSubscription = this.travelPlannerService.resultsChanged
       .subscribe(
         (flights: FlightResult[]) => {
           this.flights = this.sortResults(flights);
-          this.currentFlights = this.flights.slice(0, (this.currentFlights.length==0)?10:this.currentFlights.length);
-          if (this.flights.length == 0) {
+          this.currentShowingFlights = this.flights.slice(0, this.currentShowingSize);
+          
+          // start to load again if didn't restart component (when user does the search in the results page)
+          if (this.flights.length === 0) {
             this.isLoading = true;
+            this.hasMore = false;
           } else {
             this.isLoading = false;
           }
+          if (this.currentShowingSize < this.flights.length) {
+            this.hasMore = true;
+          }
         }
       );
+
+    this.finishedResponseSubscription = this.travelPlannerService.resultsFinished
+      .subscribe(
+        () => {
+          this.isLoading = false;
+        }
+      );
+    
     this.flights = this.sortResults(this.travelPlannerService.getResults());
-    this.currentFlights = this.flights.slice(0, 10);
+    this.currentShowingFlights = this.flights.slice(0, this.currentShowingSize);
     if (this.flights.length > 0) {
       this.isLoading = false;
     }
@@ -64,11 +82,14 @@ export class SearchResultListComponent implements OnInit {
 
   ngOnDestroy() {
     this.flightsSubscription.unsubscribe();
+    this.finishedResponseSubscription.unsubscribe();
+    this.errorSubscription.unsubscribe();
   }
 
   onLoadMore() {
-    this.currentFlights = this.flights.slice(0, this.currentFlights.length+10);
-    if (this.currentFlights.length === this.flights.length) {
+    this.currentShowingSize += 10;
+    this.currentShowingFlights = this.flights.slice(0, this.currentShowingSize);
+    if (this.currentShowingSize === this.flights.length) {
       this.hasMore = false;
     }
   }
@@ -76,7 +97,7 @@ export class SearchResultListComponent implements OnInit {
   onChangeSortedBy(sortedBy: string) {
     this.sortedBy = sortedBy;
     this.sortResults(this.flights);
-    this.currentFlights = this.flights.slice(0, this.currentFlights.length);
+    this.currentShowingFlights = this.flights.slice(0, this.currentShowingFlights.length);
   } 
 
   private sortResults(results: FlightResult[]): FlightResult[] {

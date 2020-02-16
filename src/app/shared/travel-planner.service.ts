@@ -1,31 +1,28 @@
 import { Injectable } from "@angular/core";
-import { HttpHeaders, HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { ReplaySubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { SearchParams } from '../models/search-params.model';
 import { FlightResult } from '../models/flight-result.model';
 import { Country } from '../models/country.model';
-import { map } from 'rxjs/operators';
 import { Currency } from '../models/currency.model';
 import { SkyscannerPlace } from '../models/skyscanner-place.model';
 
 @Injectable({providedIn: 'root'})
 export class TravelPlannerService {
 
-  lastSearch: SearchParams;
-  lastResults: FlightResult[] = [];
-  resultsChanged = new ReplaySubject<FlightResult[]>();
-  responseError = new ReplaySubject<boolean>();
+  private lastSearch: SearchParams;
+  private lastResults: FlightResult[] = []; 
   private currentCountry = 'UK';
   private currentCurrency = 'GBP';
+  private basePath = environment.travelPlannerAPI;
 
-   private progressSource = new ReplaySubject<number>(0);
-   progress = this.progressSource.asObservable();
-
-  protected basePath = environment.travelPlannerAPI;
-  protected defaultHeaders = new HttpHeaders();
+  resultsChanged = new BehaviorSubject<FlightResult[]>([]);
+  resultsFinished = new Subject<boolean>();
+  responseError = new Subject<boolean>();
+  progress = new BehaviorSubject<number>(0);
 
   constructor(protected httpClient: HttpClient,
               private ngbDateAdapter: NgbDateParserFormatter) {}
@@ -54,7 +51,7 @@ export class TravelPlannerService {
   }
 
   getFlights() {
-    this.progressSource.next(0);
+    this.progress.next(0);
     this.changeResults([]);
     let params = 'origin=' + this.lastSearch.originID +
                   '&destination=' + this.lastSearch.destinationID +
@@ -82,7 +79,7 @@ export class TravelPlannerService {
     let chunkIndex = 0;
     let results: FlightResult[] = [];
 
-    let processChunkedResponse = function(response: Response) {
+    let processChunkedResponse = async function(response: Response) {
       if (response.status !== 200) {
         that.responseError.next(true);
         return;
@@ -105,10 +102,10 @@ export class TravelPlannerService {
         // case for the chunks with the results
         if (index != lastIndex) {
           chunkIndex++;
-          if (text.substring(lastIndex+1, index) !== null) {
+          if (text.substring(lastIndex+1, index) !== 'null') {
             results.push(...JSON.parse(text.substring(lastIndex+1, index)));
             that.changeResults(results);
-            that.progressSource.next(chunkIndex/responseSize*100);
+            that.progress.next(chunkIndex/responseSize*100);
           }
         }
         lastIndex = index;
@@ -119,12 +116,14 @@ export class TravelPlannerService {
           return reader.read().then(appendChunks);;
         }
       }
-      return reader.read().then(appendChunks);;
+      const result = await reader.read();
+      return appendChunks(result);;
     }
 
     let onChunkedResponseComplete = function(result: any) {
-      that.progressSource.next(0);
+      that.resetProgress();
       that.lastSearch = null;
+      that.resultsFinished.next(true);
     }
 
     fetch(`${this.basePath}/flights?${params}`)
@@ -188,6 +187,6 @@ export class TravelPlannerService {
   }
 
   resetProgress() {
-    this.progressSource.next(0);
+    this.progress.next(0);
   }
 }

@@ -1,4 +1,4 @@
-<div class="d-flex flex-grow-1 flex-column justify-content-center mb-3">
+<div class="d-flex flex-grow-1 flex-column mb-3">
   <div class="d-flex justify-content-between" *ngIf="!isLoading">
     <div class="d-flex">
       <span class="sorting-label">{{this.flights.length | i18nPlural: resultsPluralMapping}}</span>
@@ -10,7 +10,7 @@
       </select>
     </div>
   </div>
-  <app-search-result-item *ngFor="let flight of currentFlights" [flight]="flight"></app-search-result-item>
+  <app-search-result-item *ngFor="let flight of currentShowingFlights" [flight]="flight"></app-search-result-item>
   <div class="d-flex justify-content-center" *ngIf="isLoading">
     <div class="spinner-border" role="status">
       <span class="sr-only">Loading...</span>
