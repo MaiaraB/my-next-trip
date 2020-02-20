@@ -1,27 +1,36 @@
 # MyNextTrip
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.2.
+An application used to find flight tickets when you know the day of the week for the departure, the duration of the trip and the period for the search, built with Angular 8, Typescript, Bootstrap, CSS and Skyscanner Api.
 
-## Development server
+Backend at https://github.com/MaiaraB/travel-plan
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.2
 
-## Code scaffolding
+## Installation and Setup Instructions
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Clone down this repository. You will need node and npm installed globally on your machine.
 
-## Build
+Installation:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+`npm install`
 
-## Running unit tests
+To Start Server:
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+`npm start`
 
-## Running end-to-end tests
+To Visit App:
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+`localhost:4200/flight-search`
 
-## Further help
+## Reflections
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+This was a two months long personal project. Project goal was using Angular with Typescript, mainly familiarizing myself with consuming APIs using the recently learned framework.
+
+Originally I wanted to build an application to help me find the best weekend to travel to a certain location. I started this process by researching for a free and easy to use flights API that would give me the flight details and fares. Skyscanner API ended up being the best fit and it's available through RapidAPI `https://rapidapi.com/skyscanner/api/skyscanner-flight-search/`. I didn't want to necessarily go through with the booking part, but since the API provides the booking link with the fares, I added it as well. 
+
+I created the project using the angular-cli `ng new` boilerplate to minimize initial setup. Along the process I decided to allow a more broad search in which you can choose the day of the week that you want to leave, how many days you want to spend there and the period for the search (3 months tops). 
+
+One of the main challenges I ran into was figuring out how to process the chunked responses coming from the API requests, since the more broad search made the requests take longer to process and I didn't want to wait for all the search results to be be ready to start showing some flights to the user. At first, my plan was to use Angular HttpClient (as I used to make requests to other API entry points) with the reportProgress option, but the text returned by the HttpDownloadProgressEvent.partialText is always concatenated with previous chunks making it less optimal having to deal with a response of already received text for each chunk that arrives. I then tried using XMLHtttpRequest which worked, but then I decided on using fetch to make it more elegant. I also took some time to learn more about fetch and [promises](https://developers.google.com/web/fundamentals/primers/promises#whats-all-the-fuss-about) in javascript.
+
+
+
