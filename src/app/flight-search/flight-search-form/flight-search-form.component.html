@@ -80,7 +80,7 @@
             autocomplete="off"
             class="form-control form-control-lg"
             placeholder="Origin"
-            (input)="onOriginChange($event.target.value)"
+            (keyup)="onOriginChange($event.target.value)"
             [ngbPopover]="popOriginSugestions" [popoverTitle]="popTitle" placement="bottom"
             [class.mb-2]="vertical"
             [class.not-vertical]="!vertical">
@@ -88,7 +88,7 @@
       <ng-template #popOriginSugestions>
         <div *ngIf="!originTooSmall; else noSuggestions" class="list-group">
           <button type="button" class="list-group-item list-group-item-action" 
-                  *ngFor="let place of originSuggestions"
+                  *ngFor="let place of originSuggestions$ | async"
                   (click)="onSelectOrigin($event.target.value, $event.target.textContent)"
                   [value]="place.PlaceId">{{ place.PlaceName }}, {{ place.CountryName }}</button>
         </div>
@@ -114,7 +114,7 @@
       <ng-template #popDestinationSugestions>
         <div *ngIf="!destinationTooSmall; else noSuggestions" class="list-group">
           <button type="button" class="list-group-item list-group-item-action" 
-            *ngFor="let place of destinationSuggestions"
+            *ngFor="let place of destinationSuggestions$ | async"
             (click)="onSelectDestination($event.target.value, $event.target.textContent)"
             [value]="place.PlaceId">{{ place.PlaceName }}, {{ place.CountryName }}</button>
         </div>

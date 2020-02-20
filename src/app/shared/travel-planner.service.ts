@@ -1,7 +1,8 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest, HttpEvent, HttpEventType, HttpDownloadProgressEvent } from '@angular/common/http';
 import { NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Subject, Observable, of } from 'rxjs';
+import { map, tap, concatMap } from 'rxjs/operators';
 
 import { environment } from 'src/environments/environment';
 import { SearchParams } from '../models/search-params.model';
@@ -31,21 +32,21 @@ export class TravelPlannerService {
     this.lastSearch = search;
   }
 
-  getSearchParams() {
+  getSearchParams() : SearchParams {
     return this.lastSearch;
   }
 
-  fetchCountries() {
+  fetchCountries() : Observable<Country[]> {
     return this.httpClient
       .get<Country[]>(`${this.basePath}/countries?locale=${navigator.language}`);
   }
 
-  fetchCurrencies() {
+  fetchCurrencies() : Observable<Currency[]> {
     return this.httpClient
       .get<Currency[]>(`${this.basePath}/currencies`);
   }
 
-  fetchPlaces(query: string) {
+  fetchPlaces(query: string) : Observable<SkyscannerPlace[]> {
     return this.httpClient
       .get<SkyscannerPlace[]>(`${this.basePath}/queryPlace?country=${this.getCurrentCountry()}&currency=${this.getCurrentCurrency()}&locale=${navigator.language}&query=${query}`);
   }
@@ -73,15 +74,13 @@ export class TravelPlannerService {
       params += '&infants' + this.lastSearch.infants;
     }
 
-    let that = this;
-    let lastIndex = -1;
     let responseSize = 0;
     let chunkIndex = 0;
     let results: FlightResult[] = [];
 
-    let processChunkedResponse = async function(response: Response) {
-      if (response.status !== 200) {
-        that.responseError.next(true);
+    let processChunkedResponse = async (response: Response) => {
+      if (!response.ok) {
+        this.responseError.next(true);
         return;
       }
 
@@ -89,26 +88,25 @@ export class TravelPlannerService {
       let reader = response.body.getReader()
       let decoder = new TextDecoder();
   
-      let appendChunks = function(result: any) {
+      let appendChunks = (result: any) => {
         let chunk = decoder.decode(result.value || new Uint8Array, {stream: !result.done});
         text += chunk;
-        let index = that.searchEscape(text, lastIndex);
-        // case for the first chunk with the response size
-        if (index != lastIndex && lastIndex == -1) {
-          responseSize = parseInt(text.substring(lastIndex+1, index))
-          lastIndex = index;
-          index = that.searchEscape(text, lastIndex);
-        }
-        // case for the chunks with the results
-        if (index != lastIndex) {
-          chunkIndex++;
-          if (text.substring(lastIndex+1, index) !== 'null') {
-            results.push(...JSON.parse(text.substring(lastIndex+1, index)));
-            that.changeResults(results);
-            that.progress.next(chunkIndex/responseSize*100);
+        let index = this.searchEscape(text, 0);
+        
+        if (index != 0) {
+          const newChunk = text.substring(0, index);
+          text = text.substring(index+1);
+          if (newChunk.length < 3) { // case for the first chunk with the response size (number of chunks)
+            responseSize = parseInt(newChunk);
+          } else { // case for the chunks with the results
+            chunkIndex++;
+            if (newChunk !== 'null') {
+              results.push(...JSON.parse(newChunk));
+              this.changeResults(results);
+              this.progress.next(chunkIndex/responseSize*100);
+            }
           }
         }
-        lastIndex = index;
 
         if (result.done) {
           return text;
@@ -117,13 +115,13 @@ export class TravelPlannerService {
         }
       }
       const result = await reader.read();
-      return appendChunks(result);;
+      return appendChunks(result);
     }
 
-    let onChunkedResponseComplete = function(result: any) {
-      that.resetProgress();
-      that.lastSearch = null;
-      that.resultsFinished.next(true);
+    let onChunkedResponseComplete = (result: any) => {
+      this.resetProgress();
+      this.lastSearch = null;
+      this.resultsFinished.next(true);
     }
 
     fetch(`${this.basePath}/flights?${params}`)

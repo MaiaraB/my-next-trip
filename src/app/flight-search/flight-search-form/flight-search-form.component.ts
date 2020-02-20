@@ -2,8 +2,10 @@ import { SearchParams } from '../../models/search-params.model';
 import { SkyscannerPlace } from '../../models/skyscanner-place.model';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
-import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig, NgbDatepickerConfig, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
+import { FormGroup, Validators, FormBuilder } from '@angular/forms';
+import { NgbDate, NgbCalendar, NgbDateParserFormatter, NgbPopoverConfig, NgbDatepickerConfig } from '@ng-bootstrap/ng-bootstrap';
+import { Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 import { TravelPlannerService } from './../../shared/travel-planner.service';
 import { CabinClass } from './../../models/cabin-class.enum';
@@ -32,8 +34,10 @@ export class FlightSearchFormComponent implements OnInit {
 
   originTooSmall = true;
   destinationTooSmall = true;
-  originSuggestions: SkyscannerPlace[];
-  destinationSuggestions: SkyscannerPlace[];
+  originSuggestions$: Observable<SkyscannerPlace[]>;
+  private originText$ = new Subject<string>();
+  destinationSuggestions$: Observable<SkyscannerPlace[]>;
+  private destinationText$ = new Subject<string>();
 
   originId: string;
   destinationId: string;
@@ -66,8 +70,18 @@ export class FlightSearchFormComponent implements OnInit {
   ngOnInit() {
     this.totalTravellers = 1;
     this.selectedClass = 'economy';
-    this.originSuggestions = [];
-    this.destinationSuggestions = [];
+    this.originSuggestions$ = this.originText$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(originValue =>
+        this.travelPlannerService.fetchPlaces(originValue))
+    );
+    this.destinationSuggestions$ = this.destinationText$.pipe(
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(destinationValue => 
+        this.travelPlannerService.fetchPlaces(destinationValue))
+    );
     if (window.innerWidth < 768) {
       this.vertical = true;
       this.displayMonths = 1;
@@ -151,8 +165,7 @@ export class FlightSearchFormComponent implements OnInit {
       this.originTooSmall = true;
     } else {
       this.originTooSmall = false;
-      this.travelPlannerService.fetchPlaces(originValue)
-        .subscribe((places: SkyscannerPlace[]) => this.originSuggestions = places)
+      this.originText$.next(originValue);
     }
   }
 
@@ -161,8 +174,7 @@ export class FlightSearchFormComponent implements OnInit {
       this.destinationTooSmall = true;
     } else {
       this.destinationTooSmall = false
-      this.travelPlannerService.fetchPlaces(destionationValue)
-        .subscribe((places: SkyscannerPlace[]) => this.destinationSuggestions = places)
+      this.destinationText$.next(destionationValue);
     }
   }
 
