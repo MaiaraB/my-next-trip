@@ -4,8 +4,6 @@ An application used to find flight tickets when you know the day of the week for
 
 Backend at https://github.com/MaiaraB/travel-plan
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.0.2
-
 ## Installation and Setup Instructions
 
 Clone down this repository. You will need node and npm installed globally on your machine.
