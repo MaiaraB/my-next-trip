@@ -4,6 +4,8 @@ An application used to find flight tickets when you know the day of the week for
 
 Backend at https://github.com/MaiaraB/travel-plan
 
+This site is published at https://maiarab.github.io/my-next-trip/
+
 ## Installation and Setup Instructions
 
 Clone down this repository. You will need node and npm installed globally on your machine.
